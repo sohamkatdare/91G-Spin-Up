@@ -1,22 +1,6 @@
 #include "../include/main.h"
 #include "custom.h"
 
-extern pros::Motor leftWheel1;
-extern pros::Motor leftWheel2;
-extern pros::Motor leftWheel3;
-extern pros::Motor rightWheel1;
-extern pros::Motor rightWheel2;
-
-extern pros::Motor flywheel;
-extern pros::Motor intake;
-extern pros::Controller master;
-
-extern pros::ADIEncoder left_encoder;
-extern pros::ADIEncoder right_encoder;
-extern pros::ADIEncoder middle_encoder;
-extern pros::IMU imu;
-
-
 /**
  * A callback function for LLEMU's center button.
  *
@@ -102,8 +86,67 @@ void opcontrol() {
 		int left = master.get_analog(ANALOG_LEFT_Y);
 		int right = master.get_analog(ANALOG_RIGHT_Y);
 
-		left_mtr = left;
-		right_mtr = right;
+		int leftVoltageVar = leftWheel1.get_voltage();
+		int rightVoltageVar = rightWheel1.get_voltage();
+		 
 		pros::delay(20);
+
+		if (left >= 110) {
+			if (leftWheel1.get_voltage() != 12000) {
+				leftVoltageVar += 50;
+				leftWheel1.move_voltage(leftVoltageVar);
+				leftWheel2.move_voltage(leftVoltageVar);
+				leftWheel3.move_voltage(leftVoltageVar);
+			} else {
+				leftWheel1.move_voltage(12000);
+				leftWheel2.move_voltage(12000);
+				leftWheel3.move_voltage(12000);
+			}
+		} else if (left <= -110) {
+			if (leftWheel1.get_voltage() != -12000) {
+				leftVoltageVar -= 50;
+				leftWheel1.move_voltage(leftVoltageVar);
+				leftWheel2.move_voltage(leftVoltageVar);
+				leftWheel3.move_voltage(leftVoltageVar);
+			} else {
+				leftWheel1.move_voltage(-12000);
+				leftWheel2.move_voltage(-12000);
+				leftWheel3.move_voltage(-12000);
+			}
+		} else {
+			leftWheel1.move(left);
+			leftWheel2.move(left);
+			leftWheel3.move(left);
+		}
+
+		if (right >= 110) {
+			if (rightWheel1.get_voltage() != 12000) {
+				rightVoltageVar += 50;
+				rightWheel1.move_voltage(leftVoltageVar);
+				rightWheel2.move_voltage(leftVoltageVar);
+				rightWheel3.move_voltage(leftVoltageVar);
+			} else {
+				rightWheel1.move_voltage(12000);
+				rightWheel2.move_voltage(12000);
+				rightWheel3.move_voltage(12000);
+			}
+		} else if (right <= -110) {
+			if (rightWheel1.get_voltage() != -12000) {
+				rightVoltageVar -= 50;
+				rightWheel1.move_voltage(leftVoltageVar);
+				rightWheel2.move_voltage(leftVoltageVar);
+				rightWheel3.move_voltage(leftVoltageVar);
+			} else {
+				rightWheel1.move_voltage(-12000);
+				rightWheel2.move_voltage(-12000);
+				rightWheel3.move_voltage(-12000);
+			}
+		} else {
+			rightWheel1.move(left);
+			rightWheel2.move(left);
+			rightWheel3.move(left);
+		}
+
+		
 	}
 }

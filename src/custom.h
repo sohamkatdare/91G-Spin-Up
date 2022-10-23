@@ -41,3 +41,5 @@ float limit(float input, float max);
 std::string fixFileName(std::string name);
 void write_csv(std::string filename, std::vector<std::pair<std::string, std::vector<float>>> dataset);
 std::vector<std::pair<std::string, std::vector<int>>> read_csv(std::string filename);
+double radiansToDegrees(double angle);
+double degreesToRadians(double angle);

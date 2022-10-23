@@ -160,27 +160,6 @@ std::vector<std::pair<std::string, std::vector<int>>> read_csv(std::string filen
     return result;
 }
 
-// void bezierCurve(int x[], int y[]) {
-//   double xu = 0.0;
-//   double yu = 0.0;
-//   double u = 0.0;
-//   int i = 0;
-//   std::vector<double> plot_x[0];
-//   std::vector<double> plot_y[0];
-
-//   for(u = 0.0; u <= 1.0; u += 0.0001) {
-//     xu = pow(1-u, 3) * x[0] + 3 * u * pow(1-u, 2) * x[1] + 3 * pow(u, 2) * (1-u) * x[2] + pow(u, 3) * x[3];
-//     plot_x.resize(plot_x.size()+1);
-//     plot_x[plot_x.size] = xu
-//     yu = pow(1-u, 3)* y[0] + 3 * u * pow(1-u, 2) * y[1] + 3 * pow(u,2) * (1-u) * y[2] + pow(u,3) * y[3];
-//     plot_y.resize(plot_y.size()+1);
-//     plot_y[plot_y.size] = yu
-//   }
-
-//   plot[2] = [plot_x, plot_y];
-//   return plot;
-// }
-
 double degreesToRadians(double angle) {
   return angle * (PI/180);
 }
