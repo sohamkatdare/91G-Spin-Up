@@ -28,6 +28,15 @@ void initialize() {
 	pros::lcd::set_text(1, "Hello PROS User!");
 
 	pros::lcd::register_btn1_cb(on_center_button);
+
+	pros::Task task {[=] {
+		std::uint32_t now = pros::millis();		
+		while ( true ) {
+			pros::Task::delay_until(&now, 16);
+
+			odomCalculations();
+		}
+	}}
 }
 
 /**
