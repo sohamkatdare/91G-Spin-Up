@@ -80,7 +80,8 @@ bin/pid.cpp.o: src/pid.cpp src/../include/main.h src/../include/api.h \
  src/../include/pros/rtos.hpp include/pros/rtos.h \
  src/../include/pros/screen.hpp include/pros/screen.h \
  src/../include/pros/vision.hpp include/pros/vision.h \
- src/../include/pros/link.hpp include/pros/link.h src/custom.h
+ src/../include/pros/link.hpp include/pros/link.h src/initialize.hpp \
+ src/util.hpp
 src/../include/main.h:
 src/../include/api.h:
 src/../include/pros/adi.h:
@@ -232,4 +233,5 @@ src/../include/pros/vision.hpp:
 include/pros/vision.h:
 src/../include/pros/link.hpp:
 include/pros/link.h:
-src/custom.h:
+src/initialize.hpp:
+src/util.hpp:

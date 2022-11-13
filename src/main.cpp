@@ -1,5 +1,8 @@
 #include "../include/main.h"
-#include "custom.h"
+#include "initialize.hpp"
+#include "odom.hpp"
+#include "pid.hpp"
+#include "util.hpp"
 
 /**
  * A callback function for LLEMU's center button.
@@ -30,13 +33,12 @@ void initialize() {
 	pros::lcd::register_btn1_cb(on_center_button);
 
 	pros::Task task {[=] {
-		std::uint32_t now = pros::millis();		
-		while ( true ) {
+		std::uint32_t now = pros::millis();
+		while (true) {
 			pros::Task::delay_until(&now, 16);
-
 			odomCalculations();
 		}
-	}}
+	}};
 }
 
 /**
@@ -97,7 +99,7 @@ void opcontrol() {
 
 		int leftVoltageVar = leftWheel1.get_voltage();
 		int rightVoltageVar = rightWheel1.get_voltage();
-		 
+
 		pros::delay(20);
 
 		if (left >= 110) {
@@ -156,6 +158,6 @@ void opcontrol() {
 			rightWheel3.move(left);
 		}
 
-		
+
 	}
 }
