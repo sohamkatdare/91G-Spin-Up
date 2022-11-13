@@ -4,6 +4,8 @@
 #include "pid.hpp"
 #include "util.hpp"
 
+//Constants
+#define MAX_VOLTAGE 12000
 
 /**
  * A callback function for LLEMU's center button.
@@ -101,29 +103,33 @@ void opcontrol() {
 		int leftVoltageVar = leftWheel1.get_voltage();
 		int rightVoltageVar = rightWheel1.get_voltage();
 
+		//Slew Rate Controls
+		int slewThreshold = 110; //Threshold at which slew rate is enabled.
+		int slew = 50; //Rate at which to slew. Possibily implement this as max rate for slewing.
+
 		pros::delay(20);
 
-		if (left >= 110) {
-			if (leftWheel1.get_voltage() != 12000) {
-				leftVoltageVar += 50;
+		if (left >= slewThreshold) {
+			if (leftWheel1.get_voltage() != MAX_VOLTAGE) {
+				leftVoltageVar += slew;
 				leftWheel1.move_voltage(leftVoltageVar);
 				leftWheel2.move_voltage(leftVoltageVar);
 				leftWheel3.move_voltage(leftVoltageVar);
 			} else {
-				leftWheel1.move_voltage(12000);
-				leftWheel2.move_voltage(12000);
-				leftWheel3.move_voltage(12000);
+				leftWheel1.move_voltage(MAX_VOLTAGE);
+				leftWheel2.move_voltage(MAX_VOLTAGE);
+				leftWheel3.move_voltage(MAX_VOLTAGE);
 			}
-		} else if (left <= -110) {
-			if (leftWheel1.get_voltage() != -12000) {
-				leftVoltageVar -= 50;
+		} else if (left <= -slewThreshold) {
+			if (leftWheel1.get_voltage() != -MAX_VOLTAGE) {
+				leftVoltageVar -= slew;
 				leftWheel1.move_voltage(leftVoltageVar);
 				leftWheel2.move_voltage(leftVoltageVar);
 				leftWheel3.move_voltage(leftVoltageVar);
 			} else {
-				leftWheel1.move_voltage(-12000);
-				leftWheel2.move_voltage(-12000);
-				leftWheel3.move_voltage(-12000);
+				leftWheel1.move_voltage(-MAX_VOLTAGE);
+				leftWheel2.move_voltage(-MAX_VOLTAGE);
+				leftWheel3.move_voltage(-MAX_VOLTAGE);
 			}
 		} else {
 			leftWheel1.move(left);
@@ -131,32 +137,32 @@ void opcontrol() {
 			leftWheel3.move(left);
 		}
 
-		if (right >= 110) {
-			if (rightWheel1.get_voltage() != 12000) {
-				rightVoltageVar += 50;
-				rightWheel1.move_voltage(leftVoltageVar);
-				rightWheel2.move_voltage(leftVoltageVar);
-				rightWheel3.move_voltage(leftVoltageVar);
+		if (right >= slewThreshold) {
+			if (rightWheel1.get_voltage() != MAX_VOLTAGE) {
+				rightVoltageVar += slew;
+				rightWheel1.move_voltage(rightVoltageVar);
+				rightWheel2.move_voltage(rightVoltageVar);
+				rightWheel3.move_voltage(rightVoltageVar);
 			} else {
-				rightWheel1.move_voltage(12000);
-				rightWheel2.move_voltage(12000);
-				rightWheel3.move_voltage(12000);
+				rightWheel1.move_voltage(MAX_VOLTAGE);
+				rightWheel2.move_voltage(MAX_VOLTAGE);
+				rightWheel3.move_voltage(MAX_VOLTAGE);
 			}
-		} else if (right <= -110) {
-			if (rightWheel1.get_voltage() != -12000) {
-				rightVoltageVar -= 50;
-				rightWheel1.move_voltage(leftVoltageVar);
-				rightWheel2.move_voltage(leftVoltageVar);
-				rightWheel3.move_voltage(leftVoltageVar);
+		} else if (right <= -slewThreshold) {
+			if (rightWheel1.get_voltage() != -MAX_VOLTAGE) {
+				rightVoltageVar -= slew;
+				rightWheel1.move_voltage(rightVoltageVar);
+				rightWheel2.move_voltage(rightVoltageVar);
+				rightWheel3.move_voltage(rightVoltageVar);
 			} else {
-				rightWheel1.move_voltage(-12000);
-				rightWheel2.move_voltage(-12000);
-				rightWheel3.move_voltage(-12000);
+				rightWheel1.move_voltage(-MAX_VOLTAGE);
+				rightWheel2.move_voltage(-MAX_VOLTAGE);
+				rightWheel3.move_voltage(-MAX_VOLTAGE);
 			}
 		} else {
-			rightWheel1.move(left);
-			rightWheel2.move(left);
-			rightWheel3.move(left);
+			rightWheel1.move(right);
+			rightWheel2.move(right);
+			rightWheel3.move(right);
 		}
 
 
