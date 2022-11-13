@@ -5,7 +5,9 @@
 #include "util.hpp"
 
 //Constants
-#define MAX_VOLTAGE 12000
+#define ANALOG_MAX 127
+#define ANALOG_MIN -127
+
 
 /**
  * A callback function for LLEMU's center button.
@@ -93,78 +95,65 @@ void opcontrol() {
 	pros::Motor left_mtr(1);
 	pros::Motor right_mtr(2);
 
+	//Possibily Add Slew Control Override
+	bool slewOverride = false; //Update this if needed.
+
+	//Starting Motor Input Values
+	int prevLeft = 0;
+	int prevRight = 0;
+
+	//Slew Rate Controls
+	int slewThreshold = 20; //Threshold at which slew rate is enabled.
+	int slew = 25; //Rate at which to slew. Possibily implement this as max rate for slewing.
+
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
+
+		//Drive Control
 		int left = master.get_analog(ANALOG_LEFT_Y);
 		int right = master.get_analog(ANALOG_RIGHT_Y);
 
-		int leftVoltageVar = leftWheel1.get_voltage();
-		int rightVoltageVar = rightWheel1.get_voltage();
+		int lOutput = left;
+		if (abs(left - prevLeft) > slewThreshold) {
+			//Change too large. Enable Slew Rate.
+			int change = slew * ((left-prevLeft) >= 0 ? 1: -1);
+			lOutput = prevLeft + change;
+			//Normalize Slew Output.
+			if (lOutput > ANALOG_MAX){
+				lOutput = ANALOG_MAX;
+			} else if (lOutput < ANALOG_MIN) {
+				lOutput = ANALOG_MIN;
+			}
+		}
+		leftWheel1.move(lOutput);
+		leftWheel2.move(lOutput);
+		leftWheel3.move(lOutput);
 
-		//Slew Rate Controls
-		int slewThreshold = 110; //Threshold at which slew rate is enabled.
-		int slew = 50; //Rate at which to slew. Possibily implement this as max rate for slewing.
+		int rOutput = right;
+		if (abs(right - prevRight) > slewThreshold) {
+			//Change too large. Enable Slew Rate.
+			int change = slew * ((right-prevRight) >= 0 ? 1: -1);
+			rOutput = prevRight + change;
+			//Normalize Slew Output.
+			if (rOutput > ANALOG_MAX){
+				rOutput = ANALOG_MAX;
+			} else if (rOutput < ANALOG_MIN) {
+				rOutput = ANALOG_MIN;
+			}
+		}
+		rightWheel1.move(rOutput);
+		rightWheel2.move(rOutput);
+		rightWheel3.move(rOutput);
+
+		prevLeft = left;
+		prevRight = right;
+
+		//Intake Control
+
+		//Flywheel Control
 
 		pros::delay(20);
-
-		if (left >= slewThreshold) {
-			if (leftWheel1.get_voltage() != MAX_VOLTAGE) {
-				leftVoltageVar += slew;
-				leftWheel1.move_voltage(leftVoltageVar);
-				leftWheel2.move_voltage(leftVoltageVar);
-				leftWheel3.move_voltage(leftVoltageVar);
-			} else {
-				leftWheel1.move_voltage(MAX_VOLTAGE);
-				leftWheel2.move_voltage(MAX_VOLTAGE);
-				leftWheel3.move_voltage(MAX_VOLTAGE);
-			}
-		} else if (left <= -slewThreshold) {
-			if (leftWheel1.get_voltage() != -MAX_VOLTAGE) {
-				leftVoltageVar -= slew;
-				leftWheel1.move_voltage(leftVoltageVar);
-				leftWheel2.move_voltage(leftVoltageVar);
-				leftWheel3.move_voltage(leftVoltageVar);
-			} else {
-				leftWheel1.move_voltage(-MAX_VOLTAGE);
-				leftWheel2.move_voltage(-MAX_VOLTAGE);
-				leftWheel3.move_voltage(-MAX_VOLTAGE);
-			}
-		} else {
-			leftWheel1.move(left);
-			leftWheel2.move(left);
-			leftWheel3.move(left);
-		}
-
-		if (right >= slewThreshold) {
-			if (rightWheel1.get_voltage() != MAX_VOLTAGE) {
-				rightVoltageVar += slew;
-				rightWheel1.move_voltage(rightVoltageVar);
-				rightWheel2.move_voltage(rightVoltageVar);
-				rightWheel3.move_voltage(rightVoltageVar);
-			} else {
-				rightWheel1.move_voltage(MAX_VOLTAGE);
-				rightWheel2.move_voltage(MAX_VOLTAGE);
-				rightWheel3.move_voltage(MAX_VOLTAGE);
-			}
-		} else if (right <= -slewThreshold) {
-			if (rightWheel1.get_voltage() != -MAX_VOLTAGE) {
-				rightVoltageVar -= slew;
-				rightWheel1.move_voltage(rightVoltageVar);
-				rightWheel2.move_voltage(rightVoltageVar);
-				rightWheel3.move_voltage(rightVoltageVar);
-			} else {
-				rightWheel1.move_voltage(-MAX_VOLTAGE);
-				rightWheel2.move_voltage(-MAX_VOLTAGE);
-				rightWheel3.move_voltage(-MAX_VOLTAGE);
-			}
-		} else {
-			rightWheel1.move(right);
-			rightWheel2.move(right);
-			rightWheel3.move(right);
-		}
-
-
 	}
 }
