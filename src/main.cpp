@@ -161,8 +161,8 @@ void opcontrol() {
 		rightWheel2.move(rOutput);
 		rightWheel3.move(rOutput);
 
-		prevLeft = left;
-		prevRight = right;
+		prevLeft = lOutput;
+		prevRight = rOutput;
 
 		//Intake and Roller Control
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
