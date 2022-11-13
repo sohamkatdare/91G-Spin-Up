@@ -1,4 +1,6 @@
 #include "../include/main.h"
+#include "../include/pros/misc.h"
+
 #include "initialize.hpp"
 #include "odom.hpp"
 #include "pid.hpp"
@@ -7,6 +9,7 @@
 //Constants
 #define ANALOG_MAX 127
 #define ANALOG_MIN -127
+#define ANALOG_ZERO 0
 
 
 /**
@@ -102,9 +105,20 @@ void opcontrol() {
 	int prevLeft = 0;
 	int prevRight = 0;
 
-	//Slew Rate Controls
+	//Drive Slew Rate Controls
 	int slewThreshold = 20; //Threshold at which slew rate is enabled.
 	int slew = 25; //Rate at which to slew. Possibily implement this as max rate for slewing.
+
+	//Bools for Intake and Flywheel. Change Defaults as needed.
+	bool intakeOn = false;
+	bool flywheelOn = false;
+
+	//Intake Stall Mechanism
+	bool intakeStall = false; //Implement to enable automatic intake disloge possibily.
+
+	//Flywheel Slew rate
+	int flywheelSpeed = 0;
+	int flywheelSlew = 15;
 
 	while (true) {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
@@ -150,9 +164,30 @@ void opcontrol() {
 		prevLeft = left;
 		prevRight = right;
 
-		//Intake Control
+		//Intake and Roller Control
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+			//Toggle intake state.
+			intakeOn = !intakeOn;
+		}
+		if (intakeOn) {
+			intake.move(ANALOG_MAX); //Change speed if this is too fast.
+		} else {
+			intake.move(ANALOG_ZERO);
+		}
+		//Add Roller Macro.
 
 		//Flywheel Control
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+			//Toggle flywheel state.
+			flywheelOn = !flywheelOn;
+		}
+		if (flywheelOn){
+			flywheelSpeed = ((flywheelSpeed + flywheelSlew) > ANALOG_MAX ? ANALOG_MAX : (flywheelSpeed + flywheelSlew));
+		} else {
+			flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));
+		}
+
+		flywheel.move(flywheelSpeed);
 
 		pros::delay(20);
 	}
