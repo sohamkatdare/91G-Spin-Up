@@ -190,5 +190,13 @@ void opcontrol() {
 		flywheel.move(flywheelSpeed);
 
 		pros::delay(20);
+
+		// Indexer Control
+		if (master.get_digital(DIGITAL_L2)) {
+			indexer.set_value(true);
+			pros::delay(500);
+			indexer.set_value(false);
+		}
+
 	}
 }
