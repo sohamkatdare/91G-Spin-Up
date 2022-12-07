@@ -11,8 +11,6 @@
 #define RIGHT_WHEEL_2 7
 #define RIGHT_WHEEL_3 8
 #define FLYWHEEL 9
-#define RIGHT_ARM 10
-#define FORK 11
 #define INTAKE 14
 #define IMU 20
 
@@ -39,5 +37,6 @@ extern pros::ADIEncoder middleQuad;
 extern pros::Imu imu;
 extern pros::ADIDigitalOut indexer;
 
+void m_intake(bool direction);
 
 #endif

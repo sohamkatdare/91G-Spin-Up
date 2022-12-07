@@ -11,7 +11,6 @@
 #define ANALOG_MIN -127
 #define ANALOG_ZERO 0
 
-
 /**
  * A callback function for LLEMU's center button.
  *
@@ -98,8 +97,8 @@ void opcontrol() {
 	pros::Motor left_mtr(1);
 	pros::Motor right_mtr(2);
 
-	//Possibily Add Slew Control Override
-	bool slewOverride = false; //Update this if needed.
+	//Possibly Add Slew Control Override
+	bool slewOverride = true; //Update this if needed.
 
 	//Starting Motor Input Values
 	int prevLeft = 0;
@@ -111,6 +110,7 @@ void opcontrol() {
 
 	//Bools for Intake and Flywheel. Change Defaults as needed.
 	bool intakeOn = false;
+	bool intakeReversed = false;
 	bool flywheelOn = false;
 
 	//Intake Stall Mechanism
@@ -124,60 +124,96 @@ void opcontrol() {
 		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
 		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
 		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
+		
+		if (slewOverride) {
+			pros::delay(5000);
+			slewOverride = false;
+		}
 
 		//Drive Control
 		int left = master.get_analog(ANALOG_LEFT_Y);
 		int right = master.get_analog(ANALOG_RIGHT_Y);
 
-		int lOutput = left;
-		if (abs(left - prevLeft) > slewThreshold) {
-			//Change too large. Enable Slew Rate.
-			int change = slew * ((left-prevLeft) >= 0 ? 1: -1);
-			lOutput = prevLeft + change;
-			//Normalize Slew Output.
-			if (lOutput > ANALOG_MAX){
-				lOutput = ANALOG_MAX;
-			} else if (lOutput < ANALOG_MIN) {
-				lOutput = ANALOG_MIN;
+		if (!slewOverride) { // normal slew control
+			int lOutput = left;
+			if (abs(left - prevLeft) > slewThreshold) {
+				//Change too large. Enable Slew Rate.
+				int change = slew * ((left-prevLeft) >= 0 ? 1: -1);
+				lOutput = prevLeft + change;
+				//Normalize Slew Output.
+				if (lOutput > ANALOG_MAX){
+					lOutput = ANALOG_MAX;
+				} else if (lOutput < ANALOG_MIN) {
+					lOutput = ANALOG_MIN;
+				}
 			}
-		}
-		leftWheel1.move(lOutput);
-		leftWheel2.move(lOutput);
-		leftWheel3.move(lOutput);
+			leftWheel1.move(lOutput);
+			leftWheel2.move(lOutput);
+			leftWheel3.move(lOutput);
 
-		int rOutput = right;
-		if (abs(right - prevRight) > slewThreshold) {
-			//Change too large. Enable Slew Rate.
-			int change = slew * ((right-prevRight) >= 0 ? 1: -1);
-			rOutput = prevRight + change;
-			//Normalize Slew Output.
-			if (rOutput > ANALOG_MAX){
-				rOutput = ANALOG_MAX;
-			} else if (rOutput < ANALOG_MIN) {
-				rOutput = ANALOG_MIN;
+			int rOutput = right;
+			if (abs(right - prevRight) > slewThreshold) {
+				//Change too large. Enable Slew Rate.
+				int change = slew * ((right-prevRight) >= 0 ? 1: -1);
+				rOutput = prevRight + change;
+				//Normalize Slew Output.
+				if (rOutput > ANALOG_MAX){
+					rOutput = ANALOG_MAX;
+				} else if (rOutput < ANALOG_MIN) {
+					rOutput = ANALOG_MIN;
+				}
 			}
-		}
-		rightWheel1.move(rOutput);
-		rightWheel2.move(rOutput);
-		rightWheel3.move(rOutput);
+			rightWheel1.move(rOutput);
+			rightWheel2.move(rOutput);
+			rightWheel3.move(rOutput);
 
-		prevLeft = lOutput;
-		prevRight = rOutput;
+			prevLeft = lOutput;
+			prevRight = rOutput;
+
+		} else { // normal drive control
+
+			leftWheel1.move(left);
+			leftWheel2.move(left);
+			leftWheel3.move(left);
+			rightWheel1.move(right);
+			rightWheel2.move(right);
+			rightWheel3.move(right);
+			
+		}
 
 		//Intake and Roller Control
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			//Toggle intake state.
 			intakeOn = !intakeOn;
 		}
+		
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+			//Toggle intake state.
+			intakeReversed = !intakeReversed;
+		}
+
 		if (intakeOn) {
-			intake.move(ANALOG_MAX); //Change speed if this is too fast.
+			if(intakeReversed){
+				intake.move(ANALOG_MIN); //Change speed if this is too fast.
+			} else {
+				intake.move(ANALOG_MAX);
+			}
 		} else {
 			intake.move(ANALOG_ZERO);
 		}
 		//Add Roller Macro.
 
+
+		// Intake Stall mechanism
+		if(intake.get_target_velocity() != 0 && intake.get_actual_velocity() == 0){ // If the motor's desired rotation speed is non-zero but it is stuck
+			double prev_vel = intake.get_target_velocity();
+			intake.move_velocity(-prev_vel); // reverse motor direction
+			pros::delay(2000); // allow some time to dislodge disk
+			intake.move_velocity(prev_vel); // return to previous direction
+		}
+
 		//Flywheel Control
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
 			//Toggle flywheel state.
 			flywheelOn = !flywheelOn;
 		}
@@ -192,7 +228,7 @@ void opcontrol() {
 		pros::delay(20);
 
 		// Indexer Control
-		if (master.get_digital(DIGITAL_L2)) {
+		if (master.get_digital(DIGITAL_R1)) {
 			indexer.set_value(true);
 			pros::delay(500);
 			indexer.set_value(false);
