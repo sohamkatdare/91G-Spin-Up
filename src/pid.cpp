@@ -2,15 +2,16 @@
 #include "initialize.hpp"
 #include "util.hpp"
 
-#define CTW 10.2101761 // circumference of tracking wheels
+#define DIAMETER 3.25 // diameter of tracking wheels in inches
 
 // drive pid
 
 void moveDistance(double distanceInFeet) { //Sychronous function. Will block main thread.
 	pros::lcd::set_text(5, "Outside");
 	int quadratureTPR = 540;
+	double circumference = DIAMETER * PI;
 	double distanceInInches = distanceInFeet * 12;
-	double targetTickTravel = quadratureTPR * (distanceInInches / CTW);
+	double targetTickTravel = quadratureTPR * (distanceInInches / circumference);
 	pros::lcd::set_text(2, std::to_string(imu.get_heading()));
 	pros::lcd::set_text(3, std::to_string(leftQuad.get_value()));
 	pros::lcd::set_text(4, std::to_string(rightQuad.get_value()));
