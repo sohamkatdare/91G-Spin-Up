@@ -78,7 +78,9 @@ void competition_initialize() {}
  * will be stopped. Re-enabling the robot will restart the task, not re-start it
  * from where it left off.
  */
-void autonomous() {}
+void autonomous() {
+	turnAngle(90);
+}
 
 /**
  * Runs the operator control code. This function will be started in its own task
@@ -94,10 +96,6 @@ void autonomous() {}
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
-
 	//Possibily Add Slew Control Override
 	bool slewOverride = false; //Update this if needed.
 
