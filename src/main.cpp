@@ -117,7 +117,8 @@ void opcontrol() {
 	int slewThreshold = 20; //Threshold at which slew rate is enabled.
 	int slew = 25; //Rate at which to slew. Possibily implement this as max rate for slewing.
 
-	//Bools for Intake and Flywheel. Change Defaults as needed.
+	//Bools for Roller, Intake, and Flywheel. Change Defaults as needed.
+	bool rollerOn = false;
 	bool intakeOn = false;
 	bool intakeReversed = false;
 	bool flywheelOn = false;
@@ -188,7 +189,12 @@ void opcontrol() {
 
 		}
 
-		//Intake and Roller Control
+		//Intake and Roller Control (Roller takes precedence over Intake)
+		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+			//Toggle slow roller state.
+			rollerOn = !rollerOn;
+		}
+
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			//Toggle intake state.
 			intakeOn = !intakeOn;
@@ -199,7 +205,9 @@ void opcontrol() {
 			intakeReversed = !intakeReversed;
 		}
 
-		if (intakeOn) {
+		if (rollerOn) {
+			intake.move(40);
+		} else if (intakeOn) {
 			if(intakeReversed){
 				intake.move(ANALOG_MIN); //Change speed if this is too fast.
 			} else {
@@ -212,12 +220,12 @@ void opcontrol() {
 
 
 		// Intake Stall mechanism
-		if(intake.get_target_velocity() != 0 && intake.get_actual_velocity() == 0){ // If the motor's desired rotation speed is non-zero but it is stuck
-			double prev_vel = intake.get_target_velocity();
-			intake.move_velocity(-prev_vel); // reverse motor direction
-			pros::delay(2000); // allow some time to dislodge disk
-			intake.move_velocity(prev_vel); // return to previous direction
-		}
+		// if(intake.get_target_velocity() != 0 && intake.get_actual_velocity() == 0){ // If the motor's desired rotation speed is non-zero but it is stuck
+		// 	double prev_vel = intake.get_target_velocity();
+		// 	intake.move_velocity(-prev_vel); // reverse motor direction
+		// 	pros::delay(2000); // allow some time to dislodge disk
+		// 	intake.move_velocity(prev_vel); // return to previous direction
+		// }
 
 		//Flywheel Control
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
@@ -225,6 +233,7 @@ void opcontrol() {
 			flywheelOn = !flywheelOn;
 		}
 		if (flywheelOn){
+			//TODO: Do speed based on distance function if possible.
 			flywheelSpeed = ((flywheelSpeed + flywheelSlew) > ANALOG_MAX ? ANALOG_MAX : (flywheelSpeed + flywheelSlew));
 		} else {
 			flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));

@@ -11,7 +11,7 @@
 #define RIGHT_WHEEL_2 10
 #define RIGHT_WHEEL_3 18
 #define FLYWHEEL 1
-#define INTAKE 9
+#define INTAKE 8
 #define IMU 20
 
 #define LEFT_QUAD_TOP 'A'

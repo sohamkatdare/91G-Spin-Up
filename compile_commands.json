@@ -31,11 +31,11 @@
             "-funwind-tables",
             "--std=gnu++17",
             "-o",
-            "bin/auton.cpp.o",
-            "src\\auton.cpp"
+            "bin/pid.cpp.o",
+            "src\\pid.cpp"
         ],
         "directory": "C:\\Users\\halde_000.SUBHASHIS-PC\\Documents\\GitHub\\91G-Spin-Up",
-        "file": "src\\auton.cpp"
+        "file": "src\\pid.cpp"
     },
     {
         "arguments": [
@@ -69,11 +69,11 @@
             "-funwind-tables",
             "--std=gnu++17",
             "-o",
-            "bin/pid.cpp.o",
-            "src\\pid.cpp"
+            "bin/auton.cpp.o",
+            "src\\auton.cpp"
         ],
         "directory": "C:\\Users\\halde_000.SUBHASHIS-PC\\Documents\\GitHub\\91G-Spin-Up",
-        "file": "src\\pid.cpp"
+        "file": "src\\auton.cpp"
     },
     {
         "arguments": [
