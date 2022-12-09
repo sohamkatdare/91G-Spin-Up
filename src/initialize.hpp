@@ -4,14 +4,14 @@
 #include "../include/main.h"
 
 //Defintions for Ports
-#define LEFT_WHEEL_1 1
-#define LEFT_WHEEL_2 2
-#define LEFT_WHEEL_3 3
-#define RIGHT_WHEEL_1 4
-#define RIGHT_WHEEL_2 7
-#define RIGHT_WHEEL_3 8
-#define FLYWHEEL 9
-#define INTAKE 14
+#define LEFT_WHEEL_1 17
+#define LEFT_WHEEL_2 12
+#define LEFT_WHEEL_3 11
+#define RIGHT_WHEEL_1 13
+#define RIGHT_WHEEL_2 10
+#define RIGHT_WHEEL_3 18
+#define FLYWHEEL 1
+#define INTAKE 9
 #define IMU 20
 
 #define LEFT_QUAD_TOP 'A'

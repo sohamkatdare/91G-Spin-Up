@@ -39,13 +39,13 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
-	pros::Task task {[=] {
-		std::uint32_t now = pros::millis();
-		while (true) {
-			pros::Task::delay_until(&now, 16);
-			odomCalculations();
-		}
-	}};
+	// pros::Task task {[=] {
+	// 	std::uint32_t now = pros::millis();
+	// 	while (true) {
+	// 		pros::Task::delay_until(&now, 16);
+	// 		odomCalculations();
+	// 	}
+	// }};
 }
 
 /**
@@ -78,6 +78,7 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
+	pros::lcd::set_text(3, "Auton");
 	turnAngle(90);
 }
 
@@ -95,9 +96,7 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::Controller master(pros::E_CONTROLLER_MASTER);
-	pros::Motor left_mtr(1);
-	pros::Motor right_mtr(2);
+	pros::lcd::set_text(3, "Driver Control");
 
 	//Possibly Add Slew Control Override
 	bool slewOverride = true; //Update this if needed.
@@ -227,8 +226,6 @@ void opcontrol() {
 
 		flywheel.move(flywheelSpeed);
 
-		pros::delay(20);
-
 		// Indexer Control
 		if (master.get_digital(DIGITAL_R1)) {
 			indexer.set_value(true);
@@ -236,5 +233,6 @@ void opcontrol() {
 			indexer.set_value(false);
 		}
 
+		pros::delay(20);
 	}
 }

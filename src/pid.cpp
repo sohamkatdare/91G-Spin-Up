@@ -3,6 +3,7 @@
 #include "util.hpp"
 
 #define DIAMETER 3.25 // diameter of tracking wheels in inches
+#define PI 3.14159
 
 // drive pid
 

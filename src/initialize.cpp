@@ -7,7 +7,7 @@ pros::Motor leftWheel3 (LEFT_WHEEL_3);
 pros::Motor rightWheel1 (RIGHT_WHEEL_1, true);
 pros::Motor rightWheel2 (RIGHT_WHEEL_2, true);
 pros::Motor rightWheel3 (RIGHT_WHEEL_3, true);
-pros::Motor flywheel (FLYWHEEL);
+pros::Motor flywheel (FLYWHEEL, true);
 pros::Motor intake (INTAKE);
 pros::Controller master (CONTROLLER_MASTER);
 
