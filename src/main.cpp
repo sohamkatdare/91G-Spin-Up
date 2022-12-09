@@ -79,7 +79,15 @@ void competition_initialize() {}
  */
 void autonomous() {
 	pros::lcd::set_text(3, "Auton");
-	turnAngle(90);
+	// turnAngle(90);
+	leftWheel1.move(128);
+	leftWheel2.move(128);
+	leftWheel3.move(128);
+	pros::delay(2000);
+	leftWheel1.move(0);
+	leftWheel2.move(0);
+	leftWheel3.move(0);
+
 }
 
 /**
@@ -99,7 +107,7 @@ void opcontrol() {
 	pros::lcd::set_text(3, "Driver Control");
 
 	//Possibly Add Slew Control Override
-	bool slewOverride = true; //Update this if needed.
+	bool slewOverride = false; //Update this if needed.
 
 	//Starting Motor Input Values
 	int prevLeft = 0;
@@ -122,18 +130,16 @@ void opcontrol() {
 	int flywheelSlew = 15;
 
 	while (true) {
-		pros::lcd::print(0, "%d %d %d", (pros::lcd::read_buttons() & LCD_BTN_LEFT) >> 2,
-		                 (pros::lcd::read_buttons() & LCD_BTN_CENTER) >> 1,
-		                 (pros::lcd::read_buttons() & LCD_BTN_RIGHT) >> 0);
-		
-		if (slewOverride) {
-			pros::delay(5000);
-			slewOverride = false;
-		}
+		//THIS CODE BLOCKS THE MAIN THREAD... DO THIS ASYNC...
+		// if (slewOverride) {
+		// 	pros::delay(5000);
+		// 	slewOverride = false;
+		// }
 
 		//Drive Control
 		int left = master.get_analog(ANALOG_LEFT_Y);
 		int right = master.get_analog(ANALOG_RIGHT_Y);
+		pros::lcd::print(5, "%d %d %d", left, right);
 
 		if (!slewOverride) { // normal slew control
 			int lOutput = left;
@@ -179,7 +185,7 @@ void opcontrol() {
 			rightWheel1.move(right);
 			rightWheel2.move(right);
 			rightWheel3.move(right);
-			
+
 		}
 
 		//Intake and Roller Control
@@ -187,7 +193,7 @@ void opcontrol() {
 			//Toggle intake state.
 			intakeOn = !intakeOn;
 		}
-		
+
 		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
 			//Toggle intake state.
 			intakeReversed = !intakeReversed;
