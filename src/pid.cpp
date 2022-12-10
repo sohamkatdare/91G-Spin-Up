@@ -9,7 +9,7 @@
 
 void moveDistance(double distanceInFeet) { //Sychronous function. Will block main thread.
 	pros::lcd::set_text(5, "Outside");
-	int quadratureTPR = 540;
+	int quadratureTPR = 360;
 	double circumference = DIAMETER * PI;
 	double distanceInInches = distanceInFeet * 12;
 	double targetTickTravel = quadratureTPR * (distanceInInches / circumference);
@@ -20,13 +20,13 @@ void moveDistance(double distanceInFeet) { //Sychronous function. Will block mai
 	//Constants
 	double dkp = 0.15;
 	double dki = 0;
-	double dkd = 0.25;
+	double dkd = 0;
 
-	double skp = 8;
+	double skp = 1;
 	double ski = 0;
-	double skd = 25;
+	double skd = 0;
 
-	double dTarget = (((double) (leftWheel1.get_position() + rightWheel1.get_position()))/2) + targetTickTravel; //Signifies the average tick position given the distance needed
+	double dTarget = (((double) (leftQuad.get_value() + rightQuad.get_value()))/2) + targetTickTravel; //Signifies the average tick position given the distance needed
 	double dErrorSigned = targetTickTravel;
 	double dError = std::abs(dErrorSigned);
 	double dLastError = dError;
@@ -56,17 +56,21 @@ void moveDistance(double distanceInFeet) { //Sychronous function. Will block mai
 	std::vector<float> sDirectionData;
 	std::vector<float> dPIDData;
 	std::vector<float> motionProfileData;
-	while ((dError >= 10 || sError >= 0.5) && currentTime <= 375 * std::abs(distanceInFeet)) { //2 PID Loop with Threshold
+	while ((dError >= 10 || sError >= 0.5) && currentTime <= (375 * std::abs(distanceInFeet))) { //2 PID Loop with Threshold
+		pros::lcd::set_text(1, std::to_string(dErrorSigned));
+		pros::lcd::set_text(2, std::to_string(imu.get_heading()));
+		pros::lcd::set_text(3, std::to_string(leftQuad.get_value()));
+		pros::lcd::set_text(4, std::to_string(rightQuad.get_value()));
 		pros::lcd::set_text(6, "Inside");
-		double average = ((double) (leftWheel1.get_position() + rightWheel1.get_position()))/2;
+		double average = ((double) (leftQuad.get_value() + rightQuad.get_value()))/2;
 		dErrorSigned = dTarget-average;
 		dError = std::abs(dErrorSigned);
 		double sErrorSigned = sTarget - imu.get_heading();
 		sErrorSigned = ( (std::abs(sErrorSigned - sLastError) < std::abs(sErrorSigned - sLastError + 360)) && (std::abs(sErrorSigned - sLastError) < std::abs(sErrorSigned - sLastError - 360)) ? sErrorSigned : ((std::abs(sErrorSigned - sLastError+360) < std::abs(sErrorSigned - sLastError)) && (std::abs(sErrorSigned - sLastError+360) < std::abs(sErrorSigned - sLastError - 360)) ? sErrorSigned - sLastError + 360 : sErrorSigned - sLastError - 360 ) );
 		sError = std::abs(sErrorSigned);
 		timeData.push_back(currentTime);
-		leftData.push_back(leftWheel1.get_position());
-		rightData.push_back(rightWheel1.get_position());
+		leftData.push_back(leftQuad.get_value());
+		rightData.push_back(rightQuad.get_value());
 		sErrorData.push_back(sErrorSigned);
 		dErrorData.push_back(dErrorSigned);
 		dTargetData.push_back(dTarget);
@@ -133,6 +137,7 @@ void moveDistance(double distanceInFeet) { //Sychronous function. Will block mai
 	rightWheel2.move(0);
 	leftWheel1.move(0);
 	leftWheel2.move(0);
+	pros::lcd::set_text(6, "Finished");
 
 	std::vector<std::pair<std::string, std::vector<float>>> data;
 

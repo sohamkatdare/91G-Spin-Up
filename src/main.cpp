@@ -4,6 +4,7 @@
 #include "initialize.hpp"
 #include "odom.hpp"
 #include "pid.hpp"
+#include "auton.hpp"
 #include "util.hpp"
 
 //Constants
@@ -79,7 +80,13 @@ void competition_initialize() {}
  */
 void autonomous() {
 	pros::lcd::set_text(3, "Auton");
-	moveDistance(2);
+	// moveDistance(2);
+	soloAWP();
+	// while(true){
+	// 	pros::lcd::set_text(4, std::to_string(leftQuad.get_value()));
+	// 	pros::lcd::set_text(5, std::to_string(rightQuad.get_value()));
+	// 	pros::delay(20);
+	// }
 }
 
 /**
@@ -132,6 +139,7 @@ void opcontrol() {
 	bool r1Pressed = false;
 	bool r2Pressed = false;
 	bool rightPressed = false;
+	bool leftPressed = false;
 
 	while (true) {
 		//THIS CODE BLOCKS THE MAIN THREAD... DO THIS ASYNC...
@@ -180,15 +188,6 @@ void opcontrol() {
 			prevLeft = lOutput;
 			prevRight = rOutput;
 
-		} else { // normal drive control
-
-			leftWheel1.move(left);
-			leftWheel2.move(left);
-			leftWheel3.move(left);
-			rightWheel1.move(right);
-			rightWheel2.move(right);
-			rightWheel3.move(right);
-
 		}
 
 		//Intake and Roller Control (Roller takes precedence over Intake)
@@ -211,12 +210,12 @@ void opcontrol() {
 		l2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
 		if (rollerOn) {
-			intake.move(40);
+			intake.move(-100);
 		} else if (intakeOn) {
 			if(intakeReversed){
-				intake.move(ANALOG_MIN); //Change speed if this is too fast.
+				intake.move(ANALOG_MIN * 0.95); //Change speed if this is too fast.
 			} else {
-				intake.move(ANALOG_MAX);
+				intake.move(ANALOG_MAX * 0.95);
 			}
 		} else {
 			intake.move(ANALOG_ZERO);
@@ -251,7 +250,7 @@ void opcontrol() {
 
 		if (flywheelOn){
 			//TODO: Do speed based on distance function if possible.
-			int targetSpeed = (ANALOG_MAX/2.5) + ((ANALOG_MAX/2.5) * (flywheelMode/4.0));
+			int targetSpeed = (ANALOG_MAX-(ANALOG_MAX/3.5)) + ((ANALOG_MAX/3.5) * (flywheelMode/4.0));
 			if (flywheelSpeed < targetSpeed) { //Accelerate Flywheel to Target.
 				flywheelSpeed = ((flywheelSpeed + flywheelSlew) > targetSpeed ? targetSpeed : (flywheelSpeed + flywheelSlew));
 			} else {
@@ -272,10 +271,11 @@ void opcontrol() {
 		r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
 
 		// Extension Control
-		if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+		if ((!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) && (!leftPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))) {
 			extension.set_value(true);
 		}
 		rightPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
+		leftPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
 
 		pros::delay(20);
 	}
