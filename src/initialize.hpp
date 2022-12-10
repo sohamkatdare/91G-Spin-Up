@@ -18,7 +18,8 @@
 #define LEFT_QUAD_BOTTOM 'B'
 #define RIGHT_QUAD_TOP 'C'
 #define RIGHT_QUAD_BOTTOM 'D'
-#define INDEXER 'e'
+#define INDEXER 'G'
+#define EXTENSION 'H'
 
 //Forward Definition for PROS Components
 extern pros::Motor leftWheel1;
@@ -36,6 +37,7 @@ extern pros::ADIEncoder rightQuad;
 extern pros::ADIEncoder middleQuad;
 extern pros::Imu imu;
 extern pros::ADIDigitalOut indexer;
+extern pros::ADIDigitalOut extension;
 
 void m_intake(bool direction);
 

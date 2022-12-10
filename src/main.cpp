@@ -80,13 +80,6 @@ void competition_initialize() {}
 void autonomous() {
 	pros::lcd::set_text(3, "Auton");
 	// turnAngle(90);
-	leftWheel1.move(128);
-	leftWheel2.move(128);
-	leftWheel3.move(128);
-	pros::delay(2000);
-	leftWheel1.move(0);
-	leftWheel2.move(0);
-	leftWheel3.move(0);
 
 }
 
@@ -128,7 +121,18 @@ void opcontrol() {
 
 	//Flywheel Slew rate
 	int flywheelSpeed = 0;
-	int flywheelSlew = 15;
+	int flywheelSlew = 20;
+
+	//Flywheel Speed Mode
+	int flywheelMode = 4; //4 is max. 1 is min.
+
+	//Toogle Button Bools
+	bool aPressed = false;
+	bool l1Pressed = false;
+	bool l2Pressed = false;
+	bool r1Pressed = false;
+	bool r2Pressed = false;
+	bool rightPressed = false;
 
 	while (true) {
 		//THIS CODE BLOCKS THE MAIN THREAD... DO THIS ASYNC...
@@ -140,7 +144,6 @@ void opcontrol() {
 		//Drive Control
 		int left = master.get_analog(ANALOG_LEFT_Y);
 		int right = master.get_analog(ANALOG_RIGHT_Y);
-		pros::lcd::print(5, "%d %d %d", left, right);
 
 		if (!slewOverride) { // normal slew control
 			int lOutput = left;
@@ -190,20 +193,23 @@ void opcontrol() {
 		}
 
 		//Intake and Roller Control (Roller takes precedence over Intake)
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
+		if(!aPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
 			//Toggle slow roller state.
 			rollerOn = !rollerOn;
 		}
+		aPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
 
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
+		if(!l1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
 			//Toggle intake state.
 			intakeOn = !intakeOn;
 		}
+		l1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
+		if(!l2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
 			//Toggle intake state.
 			intakeReversed = !intakeReversed;
 		}
+		l2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
 		if (rollerOn) {
 			intake.move(40);
@@ -228,13 +234,30 @@ void opcontrol() {
 		// }
 
 		//Flywheel Control
-		if(master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)){
+		if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
 			//Toggle flywheel state.
 			flywheelOn = !flywheelOn;
+			flywheelMode = 4;
 		}
+		r1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+
+		//Flywheel Mode
+		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
+			flywheelMode = 3;
+		} else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
+			flywheelMode = 2;
+		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
+			flywheelMode = 1;
+		}
+
 		if (flywheelOn){
 			//TODO: Do speed based on distance function if possible.
-			flywheelSpeed = ((flywheelSpeed + flywheelSlew) > ANALOG_MAX ? ANALOG_MAX : (flywheelSpeed + flywheelSlew));
+			int targetSpeed = (ANALOG_MAX/2.5) + ((ANALOG_MAX/2.5) * (flywheelMode/4.0));
+			if (flywheelSpeed < targetSpeed) { //Accelerate Flywheel to Target.
+				flywheelSpeed = ((flywheelSpeed + flywheelSlew) > targetSpeed ? targetSpeed : (flywheelSpeed + flywheelSlew));
+			} else {
+				flywheelSpeed = ((flywheelSpeed - flywheelSlew) < targetSpeed ? targetSpeed : (flywheelSpeed - flywheelSlew));
+			}
 		} else {
 			flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));
 		}
@@ -242,11 +265,18 @@ void opcontrol() {
 		flywheel.move(flywheelSpeed);
 
 		// Indexer Control
-		if (master.get_digital(DIGITAL_R1)) {
+		if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			indexer.set_value(true);
-			pros::delay(500);
+			pros::delay(250);
 			indexer.set_value(false);
 		}
+		r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
+
+		// Extension Control
+		if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+			extension.set_value(true);
+		}
+		rightPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
 
 		pros::delay(20);
 	}
