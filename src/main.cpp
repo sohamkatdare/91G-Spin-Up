@@ -79,8 +79,7 @@ void competition_initialize() {}
  */
 void autonomous() {
 	pros::lcd::set_text(3, "Auton");
-	// turnAngle(90);
-
+	moveDistance(2);
 }
 
 /**

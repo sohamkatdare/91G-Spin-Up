@@ -118,9 +118,11 @@ void moveDistance(double distanceInFeet) { //Sychronous function. Will block mai
 		rightMotorData.push_back(power-rightSideCorrection);
 		leftMotorData.push_back(power-leftSideCorrection);
 		rightWheel1.move((power-rightSideCorrection) * dDirection);
-		rightWheel2.move((-power+rightSideCorrection) * dDirection);
+		rightWheel2.move((power-rightSideCorrection) * dDirection);
+		rightWheel3.move((power-rightSideCorrection) * dDirection);
 		leftWheel1.move((power-leftSideCorrection) * dDirection);
-		leftWheel2.move((-power+leftSideCorrection) * dDirection);
+		leftWheel2.move((power-leftSideCorrection) * dDirection);
+		leftWheel3.move((power-leftSideCorrection) * dDirection);
 		motionProfile += (motionProfile + 10 <= 127 ? 10 : 0);
 		pros::lcd::set_text(3, std::to_string(dErrorSigned));
 		pros::lcd::set_text(4, std::to_string(sErrorSigned));
@@ -152,18 +154,15 @@ void moveDistance(double distanceInFeet) { //Sychronous function. Will block mai
 	data.push_back(std::make_pair("Left Motor", leftMotorData));
 	data.push_back(std::make_pair("Right Motor", rightMotorData));
 	write_csv("/usd/PIDDriveData.csv", data);
-	pros::lcd::set_text(2, std::to_string(imu.get_heading()));
-	pros::lcd::set_text(3, std::to_string(leftQuad.get_value()));
-	pros::lcd::set_text(4, std::to_string(rightQuad.get_value()));
 }
 
 // turn pid
 
 void turnAngle(double angleInDegrees) { //Sychronous function. Will block main thread.
 	//Constants
-	double kp = 2.3;
+	double kp = 2.7;
 	double ki = 0;
-	double kd = 5;
+	double kd = 3;
 	double targetAngle = imu.get_heading() + angleInDegrees;
 	if(targetAngle >= 360){
 		targetAngle-=360;
@@ -188,7 +187,12 @@ void turnAngle(double angleInDegrees) { //Sychronous function. Will block main t
 	pros::lcd::set_text(4, std::to_string(targetAngle));
 	pros::lcd::set_text(5, std::to_string(error));
 
-	while(error>=0.5 && currentTime<=(std::abs(angleInDegrees)*7.5) + 350){ //PID loop with threshold //Add timeout if needed!!!
+	while(error>=0.5 && currentTime<=(std::abs(angleInDegrees)*9.5) + 350){ //PID loop with threshold //Add timeout if needed!!!
+		pros::lcd::set_text(2, std::to_string(imu.get_heading()));
+		pros::lcd::set_text(3, std::to_string(leftQuad.get_value()));
+		pros::lcd::set_text(4, std::to_string(rightQuad.get_value()));
+		pros::lcd::set_text(5, std::to_string(targetAngle));
+
 		signedError = targetAngle - imu.get_heading();
 		signedError = ( (std::abs(signedError - lastSignedError) < std::abs(signedError - lastSignedError + 360)) && (std::abs(signedError - lastSignedError) < std::abs(signedError - lastSignedError - 360)) ? signedError : ((std::abs(signedError - lastSignedError+360) < std::abs(signedError - lastSignedError)) && (std::abs(signedError - lastSignedError+360) < std::abs(signedError - lastSignedError - 360)) ? signedError + 360 : signedError - 360 ) );
 		error = std::abs(signedError);
@@ -215,9 +219,11 @@ void turnAngle(double angleInDegrees) { //Sychronous function. Will block main t
 		motorData.push_back(power);
 		int direction = (signedError > 0 ? 1 : -1);
 		rightWheel1.move(-power * direction); //Running in rpm values from -200 to 200.
-		rightWheel2.move(power * direction);
+		rightWheel2.move(-power * direction);
+		rightWheel3.move(-power * direction);
 		leftWheel1.move(power * direction);
-		leftWheel2.move(-power * direction);
+		leftWheel2.move(power * direction);
+		leftWheel3.move(power * direction);
 
 		motionProfile += ( motionProfile + 25 <= 127 ? 25: 0);
 		pros::delay(20);
