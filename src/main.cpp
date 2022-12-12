@@ -40,6 +40,8 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
+	extension.set_value(true);
+
 	// pros::Task task {[=] {
 	// 	std::uint32_t now = pros::millis();
 	// 	while (true) {
@@ -265,13 +267,14 @@ void opcontrol() {
 		// Indexer Control
 		if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
 			indexer.set_value(true);
-			pros::delay(250);
+			pros::delay(100);
 			indexer.set_value(false);
 		}
 		r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
 
 		// Extension Control
-		if ((!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) && (!leftPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT))) {
+		if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+			extension.set_value(false);
 			extension.set_value(true);
 		}
 		rightPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
