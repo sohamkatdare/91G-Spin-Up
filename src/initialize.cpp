@@ -14,5 +14,6 @@ pros::Controller master (CONTROLLER_MASTER);
 pros::ADIEncoder leftQuad(LEFT_QUAD_TOP, LEFT_QUAD_BOTTOM);
 pros::ADIEncoder rightQuad(RIGHT_QUAD_TOP, RIGHT_QUAD_BOTTOM, true);
 pros::Imu imu (IMU);
+pros::Optical discSensor (DISK);
 pros::ADIDigitalOut indexer (INDEXER);
 pros::ADIDigitalOut extension (EXTENSION);

@@ -2,6 +2,7 @@
 #define _INIT_H_
 
 #include "../include/main.h"
+#include "pros/optical.hpp"
 
 //Defintions for Ports
 #define LEFT_WHEEL_1 17
@@ -13,6 +14,7 @@
 #define FLYWHEEL 1
 #define INTAKE 8
 #define IMU 20
+#define DISK 2
 
 #define LEFT_QUAD_TOP 'A'
 #define LEFT_QUAD_BOTTOM 'B'
@@ -36,6 +38,7 @@ extern pros::ADIEncoder leftQuad;
 extern pros::ADIEncoder rightQuad;
 extern pros::ADIEncoder middleQuad;
 extern pros::Imu imu;
+extern pros::Optical diskSensor;
 extern pros::ADIDigitalOut indexer;
 extern pros::ADIDigitalOut extension;
 
