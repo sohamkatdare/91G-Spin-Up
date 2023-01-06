@@ -107,11 +107,11 @@
             "-funwind-tables",
             "--std=gnu++17",
             "-o",
-            "bin/pid.cpp.o",
-            "src\\pid.cpp"
+            "bin/initialize.cpp.o",
+            "src\\initialize.cpp"
         ],
         "directory": "C:\\Users\\soham\\Desktop\\Github Projects\\91G-Spin-Up",
-        "file": "src\\pid.cpp"
+        "file": "src\\initialize.cpp"
     },
     {
         "arguments": [
@@ -145,10 +145,10 @@
             "-funwind-tables",
             "--std=gnu++17",
             "-o",
-            "bin/initialize.cpp.o",
-            "src\\initialize.cpp"
+            "bin/pid.cpp.o",
+            "src\\pid.cpp"
         ],
         "directory": "C:\\Users\\soham\\Desktop\\Github Projects\\91G-Spin-Up",
-        "file": "src\\initialize.cpp"
+        "file": "src\\pid.cpp"
     }
 ]

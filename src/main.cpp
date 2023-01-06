@@ -127,9 +127,23 @@ void opcontrol() {
 	//Intake Stall Mechanism
 	bool intakeStall = false; //Implement to enable automatic intake disloge possibily.
 
+	// flywheel vars
+	double targetVoltage = 0;
+
 	//Flywheel Slew rate
 	int flywheelSpeed = 0;
 	int flywheelSlew = 20;
+
+	// flywheel pid vars
+	double kp = 0.0;
+	double ki = 0.0;
+	double kd = 0.0;
+	double signedError;
+	double lastSignedError;
+	double error;
+	double lastError;
+	double integral = 0;
+	int motionProfile;
 
 	//Flywheel Speed Mode
 	int flywheelMode = 4; //4 is max. 1 is min.
@@ -250,19 +264,53 @@ void opcontrol() {
 			flywheelMode = 1;
 		}
 
-		if (flywheelOn){
-			//TODO: Do speed based on distance function if possible.
-			int targetSpeed = (ANALOG_MAX-(ANALOG_MAX/3.5)) + ((ANALOG_MAX/3.5) * (flywheelMode/4.0));
-			if (flywheelSpeed < targetSpeed) { //Accelerate Flywheel to Target.
-				flywheelSpeed = ((flywheelSpeed + flywheelSlew) > targetSpeed ? targetSpeed : (flywheelSpeed + flywheelSlew));
-			} else {
-				flywheelSpeed = ((flywheelSpeed - flywheelSlew) < targetSpeed ? targetSpeed : (flywheelSpeed - flywheelSlew));
+		if (flywheelOn) {
+
+			if (targetVoltage == 0) {
+				targetVoltage = 12000; // change depending on mode
+				signedError = targetVoltage;
 			}
+
+			while (error >= 0.5) {
+				signedError = targetVoltage - flywheel.get_actual_velocity();
+				error = std::abs(signedError);
+
+				// main PID calculations
+				double p = error * kp;
+				integral += error;
+				double i = integral * ki;
+				double d = (error - lastError) * kd;
+				lastError = error;
+				lastSignedError = signedError;
+				double pid = p + i + d;
+				double power = motionProfile;
+				if (motionProfile >= pid) {
+					power = pid;
+				}
+				flywheel.move(power);
+
+				motionProfile += (motionProfile + 25 <= 127 ? 25 : 0);
+				pros::delay(20);
+			}
+
+			//TODO: Do speed based on distance function if possible.
+			// int targetSpeed = (ANALOG_MAX-(ANALOG_MAX/3.5)) + ((ANALOG_MAX/3.5) * (flywheelMode/4.0));
+			// if (flywheelSpeed < targetSpeed) { //Accelerate Flywheel to Target.
+			// 	flywheelSpeed = ((flywheelSpeed + flywheelSlew) > targetSpeed ? targetSpeed : (flywheelSpeed + flywheelSlew));
+			// } else {
+			// 	flywheelSpeed = ((flywheelSpeed - flywheelSlew) < targetSpeed ? targetSpeed : (flywheelSpeed - flywheelSlew));
+			// }
 		} else {
-			flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));
+			targetVoltage = 0;
+			signedError = targetVoltage;
+			lastSignedError = signedError;
+			error = std::abs(signedError);
+			lastError = error;
+			motionProfile = 0;
+			// flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));
 		}
 
-		flywheel.move(flywheelSpeed);
+		// flywheel.move(flywheelSpeed);
 
 		// Indexer Control
 		if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {

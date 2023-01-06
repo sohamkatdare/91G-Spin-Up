@@ -250,14 +250,13 @@ void turnAngle(double angleInDegrees) { //Sychronous function. Will block main t
 }
 
 // flywheel PID
-
-void shoot (double targetVelocity) {
+void shoot (double targetVoltage, int discs) {
 	// constants
 	double kp = 0.0;
 	double ki = 0.0;
 	double kd = 0.0;
 
-	double signedError = targetVelocity;
+	double signedError = targetVoltage;
 	double lastSignedError = signedError;
 	double error = std::abs(signedError);
 	double lastError = error;
@@ -273,36 +272,54 @@ void shoot (double targetVelocity) {
 	std::vector<float> PIDData;
 	std::vector<float> motionProfileData;
 
-	while (diskSensor.get_hue() != )
-	while (error >= 0.5) {
-		
-		signedError = targetVelocity - flywheel.get_actual_velocity();
-		error = std::abs(signedError);
-		timeData.push_back(currentTime);
-		errorData.push_back(signedError);
-		targetData.push_back(0.0);
-		currentTime += 20;
-
-		// main PID calculations
-		double p = error * kp;
-		integral += error;
-		double i = integral * ki;
-		double d = (error - lastError) * kd;
-		lastError = error;
-		lastSignedError = signedError;
-		double pid = p + i + d;
-		PIDData.push_back(pid);
-		motionProfileData.push_back(motionProfile);
-		double power = motionProfile;
-		if (motionProfile >= pid) {
-			power = pid;
-		}
-		motorData.push_back(power);
-		flywheel.move(power);
-
-		motionProfile += (motionProfile + 25 <= 127 ? 25 : 0);
-		pros::delay(20);
-	}
-
+	bool completed = false;
 	
+	for (int i = 0; i < discs; i++){
+		while (error >= 0.5) {
+			
+			signedError = targetVoltage - flywheel.get_voltage();
+			error = std::abs(signedError);
+			timeData.push_back(currentTime);
+			errorData.push_back(signedError);
+			targetData.push_back(0.0);
+			currentTime += 20;
+
+			// main PID calculations
+			double p = error * kp;
+			integral += error;
+			double i = integral * ki;
+			double d = (error - lastError) * kd;
+			lastError = error;
+			lastSignedError = signedError;
+			double pid = p + i + d;
+			PIDData.push_back(pid);
+			motionProfileData.push_back(motionProfile);
+			double power = motionProfile;
+			if (motionProfile >= pid) {
+				power = pid;
+			}
+			motorData.push_back(power);
+			flywheel.move_voltage(power);
+
+			motionProfile += (motionProfile + 25 <= 127 ? 25 : 0);
+			pros::delay(20);
+		}
+		indexer.set_value(true);
+		indexer.set_value(false);
+		pros::delay(500);
+		
+		signedError = flywheel.get_voltage();
+		lastSignedError = signedError;
+		error = std::abs(signedError);
+		lastError = error;
+	}
+	
+	std::vector<std::pair<std::string, std::vector<float>>> data;
+	data.push_back(std::make_pair("Time", timeData));
+	data.push_back(std::make_pair("Error", errorData));
+	data.push_back(std::make_pair("Target", targetData));
+	data.push_back(std::make_pair("PID", PIDData));
+	data.push_back(std::make_pair("Motion Profile", motionProfileData));
+	data.push_back(std::make_pair("Motor", motorData));
+	write_csv("/usd/PIDFlywData.csv", data);
 }
