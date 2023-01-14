@@ -272,8 +272,6 @@ void shoot (double targetVelocity) {
 	std::vector<float> motorData;
 	std::vector<float> PIDData;
 	std::vector<float> motionProfileData;
-
-	while (diskSensor.get_hue() != )
 	while (error >= 0.5) {
 		
 		signedError = targetVelocity - flywheel.get_actual_velocity();

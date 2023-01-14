@@ -5,23 +5,22 @@
 #include "pros/optical.hpp"
 
 //Defintions for Ports
-#define LEFT_WHEEL_1 17
-#define LEFT_WHEEL_2 12
-#define LEFT_WHEEL_3 11
-#define RIGHT_WHEEL_1 13
-#define RIGHT_WHEEL_2 10
-#define RIGHT_WHEEL_3 18
+#define LEFT_WHEEL_1 12
+#define LEFT_WHEEL_2 13
+#define LEFT_WHEEL_3 2
+#define RIGHT_WHEEL_1 14
+#define RIGHT_WHEEL_2 15
+#define RIGHT_WHEEL_3 8
 #define FLYWHEEL 1
-#define INTAKE 8
+#define INTAKE 7
 #define IMU 20
-#define DISK 2
 
 #define LEFT_QUAD_TOP 'A'
-#define LEFT_QUAD_BOTTOM 'B'
-#define RIGHT_QUAD_TOP 'C'
+#define LEFT_QUAD_BOTTOM 'H'
+#define RIGHT_QUAD_TOP 'G'
 #define RIGHT_QUAD_BOTTOM 'D'
-#define INDEXER 'G'
-#define EXTENSION 'H'
+#define EXTENSION1 'B'
+#define EXTENSION2 'C'
 
 //Forward Definition for PROS Components
 extern pros::Motor leftWheel1;
@@ -40,7 +39,8 @@ extern pros::ADIEncoder middleQuad;
 extern pros::Imu imu;
 extern pros::Optical diskSensor;
 extern pros::ADIDigitalOut indexer;
-extern pros::ADIDigitalOut extension;
+extern pros::ADIDigitalOut extension1;
+extern pros::ADIDigitalOut extension2;
 
 void m_intake(bool direction);
 

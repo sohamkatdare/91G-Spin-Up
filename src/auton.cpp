@@ -30,12 +30,12 @@ void flywheel_move() {
 
 void soloAWP() {
     intake.move(-127);
-		rightWheel1.move(40);
-		rightWheel2.move(40);
-		rightWheel3.move(40);
-		leftWheel1.move(40);
-		leftWheel2.move(40);
-		leftWheel3.move(40);
+		rightWheel1.move(-40);
+		rightWheel2.move(-40);
+		rightWheel3.move(-40);
+		leftWheel1.move(-40);
+		leftWheel2.move(-40);
+		leftWheel3.move(-40);
     pros::delay(500);
 		intake.move(0);
 		rightWheel1.move(0);
@@ -45,12 +45,12 @@ void soloAWP() {
 		leftWheel2.move(0);
 		leftWheel3.move(0);
 		pros::delay(2000);
-		rightWheel1.move(-40);
-		rightWheel2.move(-40);
-		rightWheel3.move(-40);
-		leftWheel1.move(-40);
-		leftWheel2.move(-40);
-		leftWheel3.move(-40);
+		rightWheel1.move(40);
+		rightWheel2.move(40);
+		rightWheel3.move(40);
+		leftWheel1.move(40);
+		leftWheel2.move(40);
+		leftWheel3.move(40);
 		pros::delay(200);
 		rightWheel1.move(0);
 		rightWheel2.move(0);

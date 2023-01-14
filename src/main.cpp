@@ -40,8 +40,6 @@ void initialize() {
 
 	pros::lcd::register_btn1_cb(on_center_button);
 
-	extension.set_value(true);
-
 	// pros::Task task {[=] {
 	// 	std::uint32_t now = pros::millis();
 	// 	while (true) {
@@ -212,15 +210,15 @@ void opcontrol() {
 		l2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
 		if (rollerOn) {
-			intake.move(-100);
+			intake.move_velocity(-300);
 		} else if (intakeOn) {
 			if(intakeReversed){
-				intake.move(ANALOG_MIN * 0.95); //Change speed if this is too fast.
+				intake.move_velocity(-600); //Change speed if this is too fast.
 			} else {
-				intake.move(ANALOG_MAX * 0.95);
+				intake.move_velocity(600);
 			}
 		} else {
-			intake.move(ANALOG_ZERO);
+			intake.move_velocity(0);
 		}
 		//Add Roller Macro.
 
@@ -265,18 +263,21 @@ void opcontrol() {
 		flywheel.move(flywheelSpeed);
 
 		// Indexer Control
-		if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-			indexer.set_value(true);
-			pros::delay(100);
-			indexer.set_value(false);
-		}
-		r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
+		// if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+		// 	indexer.set_value(true);
+		// 	pros::delay(100);
+		// 	indexer.set_value(false);
+		// }
+		// r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
 
 		// Extension Control
 		if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			extension.set_value(false);
-			extension.set_value(true);
+			// extension1.set_value(false);
+			// extension2.set_value(false);
+			extension1.set_value(true);
+			extension2.set_value(true);
 		}
+
 		rightPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
 		leftPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
 
