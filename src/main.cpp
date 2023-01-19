@@ -81,7 +81,7 @@ void competition_initialize() {}
 void autonomous() {
 	pros::lcd::set_text(3, "Auton");
 	// moveDistance(2);
-	soloAWP();
+	roller();
 	// while(true){
 	// 	pros::lcd::set_text(4, std::to_string(leftQuad.get_value()));
 	// 	pros::lcd::set_text(5, std::to_string(rightQuad.get_value()));

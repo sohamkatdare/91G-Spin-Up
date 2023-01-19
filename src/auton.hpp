@@ -3,8 +3,6 @@
 
 extern void shoot_disc(int discnum);
 
-extern void flywheel_move();
-
-extern void soloAWP();
+extern void flywheel_move(), roller(), basket();
 
 #endif

@@ -7,13 +7,13 @@
 #define ANALOG_MIN -127
 #define ANALOG_ZERO 0
 
-void shoot_disc(int discnum) { // number of discs in container
-	for (int i = 0; i < discnum; i++) {
-		indexer.set_value(true);
-		pros::delay(20);
-		indexer.set_value(false);
-		pros::delay(20);
-	}
+void drive_move(double left_voltage, double right_voltage) {
+	rightWheel1.move(right_voltage);
+	rightWheel2.move(right_voltage);
+	rightWheel3.move(right_voltage);
+	leftWheel1.move(left_voltage);
+	leftWheel2.move(left_voltage);
+	leftWheel3.move(left_voltage);
 }
 
 void flywheel_move() {
@@ -28,56 +28,30 @@ void flywheel_move() {
     }
 }
 
-void soloAWP() {
+void roller() {
     intake.move(-127);
-		rightWheel1.move(-40);
-		rightWheel2.move(-40);
-		rightWheel3.move(-40);
-		leftWheel1.move(-40);
-		leftWheel2.move(-40);
-		leftWheel3.move(-40);
+	drive_move(-40, -40);
     pros::delay(500);
-		intake.move(0);
-		rightWheel1.move(0);
-		rightWheel2.move(0);
-		rightWheel3.move(0);
-		leftWheel1.move(0);
-		leftWheel2.move(0);
-		leftWheel3.move(0);
-		pros::delay(2000);
-		rightWheel1.move(40);
-		rightWheel2.move(40);
-		rightWheel3.move(40);
-		leftWheel1.move(40);
-		leftWheel2.move(40);
-		leftWheel3.move(40);
-		pros::delay(200);
-		rightWheel1.move(0);
-		rightWheel2.move(0);
-		rightWheel3.move(0);
-		leftWheel1.move(0);
-		leftWheel2.move(0);
-		leftWheel3.move(0);
-    // moveDistance(-1);
-		// pros::delay(500);
-		// rightWheel1.move(0);
-		// rightWheel2.move(0);
-		// rightWheel3.move(0);
-		// leftWheel1.move(0);
-		// leftWheel2.move(0);
-		// leftWheel3.move(0);
-    // turnAngle(-10);
-    // flywheel_move();
-    // shoot_disc(2);
-    // turnAngle(-75);
-    // moveDistance(6);
-    // turnAngle(45);
-    // moveDistance(2);
-    // turnAngle(45);
-    // moveDistance(6);
-    // turnAngle(90);
-    // m_intake(true);
-    // pros::delay(1000);
-    // m_intake(true);
-    // moveDistance(-1);
+	intake.move(0);
+	drive_move(0, 0);
+	pros::delay(2000);
+	drive_move(40, 40);
+	pros::delay(200);
+	drive_move(0, 0);
+}
+
+void basket() {
+	roller();
+	flywheel_move();
+	intake.move(-127);
+	pros::delay(500);
+	intake.move(0);
+	pros::delay(1000);
+	intake.move(-127);
+	pros::delay(500);
+	intake.move(0);
+}
+
+void progSkills() {
+	
 }

@@ -1,4 +1,6 @@
 #include "../include/main.h"
+#include "/initialize.hpp"
+#include "pid.hpp"
 #include "util.hpp"
 #include <cmath>
 #include <vector>
@@ -21,16 +23,30 @@ void odomCalculations() {
     uint32_t now = pros::millis();
     while(true) {
         // instantaneous angle calculation
-        theta = (dL-dR) / (Tl + Tr);
+        theta = fmod(imu.get_rotation(), 360);
 
         // Coordinate calculations
         yCo += 2 * ((dR / theta) + Tr) * sin(theta / 2); // y-coordinate
-        xCo += 2 * ((dB / theta) + Tb) * sin(theta / 2); // x-coordinate
+        xCo += 2 * ((dB / theta) + Tb) * sin(theta / 2); // x-coordinate (cannot be performed due to no tracking wheel to measure horizontal movement)
     }
 }
 
 double getCurrentAngle() {
     return radiansToDegrees(theta); // returns angle in degrees
+}
+
+double turnToPoint(double x, double y) {
+    double targetAngle = atan((y-yCo)/(x-xCo));
+    turnAngle(targetAngle);
+    return targetAngle;
+}
+
+void moveToPoint(double x, double y) {
+    while (x != xCo && y != yCo) {
+        turnToPoint(x, y);
+        double hypotenuse = pow((x-xCo), 2) + pow((y-yCo), 2);
+        moveDistance(hypotenuse);
+    }
 }
 
 void setOdomValues(double angle, double x, double y) { //takes in angle in degrees
