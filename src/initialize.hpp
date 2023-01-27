@@ -4,13 +4,13 @@
 #include "../include/main.h"
 #include "pros/optical.hpp"
 
-//Defintions for Ports
-#define LEFT_WHEEL_1 12
-#define LEFT_WHEEL_2 13
-#define LEFT_WHEEL_3 2
-#define RIGHT_WHEEL_1 14
-#define RIGHT_WHEEL_2 15
-#define RIGHT_WHEEL_3 8
+// Defintions for Ports
+#define LEFT_WHEEL_1 16
+#define LEFT_WHEEL_2 20
+#define LEFT_WHEEL_3 15
+#define RIGHT_WHEEL_1 12
+#define RIGHT_WHEEL_2 14
+#define RIGHT_WHEEL_3 19
 #define FLYWHEEL 1
 #define INTAKE 7
 #define IMU 20
@@ -22,7 +22,7 @@
 #define EXTENSION1 'B'
 #define EXTENSION2 'C'
 
-//Forward Definition for PROS Components
+// Forward Definition for PROS Components
 extern pros::Motor leftWheel1;
 extern pros::Motor leftWheel2;
 extern pros::Motor leftWheel3;

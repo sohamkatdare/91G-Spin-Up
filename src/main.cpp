@@ -1,13 +1,13 @@
 #include "../include/main.h"
 #include "../include/pros/misc.h"
 
+#include "auton.hpp"
 #include "initialize.hpp"
 #include "odom.hpp"
 #include "pid.hpp"
-#include "auton.hpp"
 #include "util.hpp"
 
-//Constants
+// Constants
 #define ANALOG_MAX 127
 #define ANALOG_MIN -127
 #define ANALOG_ZERO 0
@@ -19,13 +19,13 @@
  * "I was pressed!" and nothing.
  */
 void on_center_button() {
-	static bool pressed = false;
-	pressed = !pressed;
-	if (pressed) {
-		pros::lcd::set_text(2, "I was pressed!");
-	} else {
-		pros::lcd::clear_line(2);
-	}
+  static bool pressed = false;
+  pressed = !pressed;
+  if (pressed) {
+    pros::lcd::set_text(2, "I was pressed!");
+  } else {
+    pros::lcd::clear_line(2);
+  }
 }
 
 /**
@@ -35,18 +35,18 @@ void on_center_button() {
  * to keep execution time for this mode under a few seconds.
  */
 void initialize() {
-	pros::lcd::initialize();
-	pros::lcd::set_text(1, "Hello PROS User!");
+  pros::lcd::initialize();
+  pros::lcd::set_text(1, "Hello PROS User!");
 
-	pros::lcd::register_btn1_cb(on_center_button);
+  pros::lcd::register_btn1_cb(on_center_button);
 
-	// pros::Task task {[=] {
-	// 	std::uint32_t now = pros::millis();
-	// 	while (true) {
-	// 		pros::Task::delay_until(&now, 16);
-	// 		odomCalculations();
-	// 	}
-	// }};
+  // pros::Task task {[=] {
+  // 	std::uint32_t now = pros::millis();
+  // 	while (true) {
+  // 		pros::Task::delay_until(&now, 16);
+  // 		odomCalculations();
+  // 	}
+  // }};
 }
 
 /**
@@ -79,14 +79,15 @@ void competition_initialize() {}
  * from where it left off.
  */
 void autonomous() {
-	pros::lcd::set_text(3, "Auton");
-	// moveDistance(2);
-	roller();
-	// while(true){
-	// 	pros::lcd::set_text(4, std::to_string(leftQuad.get_value()));
-	// 	pros::lcd::set_text(5, std::to_string(rightQuad.get_value()));
-	// 	pros::delay(20);
-	// }
+  pros::lcd::set_text(3, "Auton");
+  turnAngle(90);
+  // moveDistance(2);
+  // roller();
+  // while(true){
+  // 	pros::lcd::set_text(4, std::to_string(leftQuad.get_value()));
+  // 	pros::lcd::set_text(5, std::to_string(rightQuad.get_value()));
+  // 	pros::delay(20);
+  // }
 }
 
 /**
@@ -103,184 +104,193 @@ void autonomous() {
  * task, not resume it from where it left off.
  */
 void opcontrol() {
-	pros::lcd::set_text(3, "Driver Control");
+  pros::lcd::set_text(3, "Driver Control");
 
-	//Possibly Add Slew Control Override
-	bool slewOverride = false; //Update this if needed.
+  // Possibly Add Slew Control Override
+  bool slewOverride = false; // Update this if needed.
 
-	//Starting Motor Input Values
-	int prevLeft = 0;
-	int prevRight = 0;
+  // Starting Motor Input Values
+  int prevLeft = 0;
+  int prevRight = 0;
 
-	//Drive Slew Rate Controls
-	int slewThreshold = 20; //Threshold at which slew rate is enabled.
-	int slew = 25; //Rate at which to slew. Possibily implement this as max rate for slewing.
+  // Drive Slew Rate Controls
+  int slewThreshold = 20; // Threshold at which slew rate is enabled.
+  int slew = 25; // Rate at which to slew. Possibily implement this as max rate
+                 // for slewing.
 
-	//Bools for Roller, Intake, and Flywheel. Change Defaults as needed.
-	bool rollerOn = false;
-	bool intakeOn = false;
-	bool intakeReversed = false;
-	bool flywheelOn = false;
+  // Bools for Roller, Intake, and Flywheel. Change Defaults as needed.
+  bool rollerOn = false;
+  bool intakeOn = false;
+  bool intakeReversed = false;
+  bool flywheelOn = false;
 
-	//Intake Stall Mechanism
-	bool intakeStall = false; //Implement to enable automatic intake disloge possibily.
+  // Intake Stall Mechanism
+  bool intakeStall =
+      false; // Implement to enable automatic intake disloge possibily.
 
-	//Flywheel Slew rate
-	int flywheelSpeed = 0;
-	int flywheelSlew = 20;
+  // Flywheel Slew rate
+  int flywheelSpeed = 0;
+  int flywheelSlew = 20;
 
-	//Flywheel Speed Mode
-	int flywheelMode = 4; //4 is max. 1 is min.
+  // Flywheel Speed Mode
+  int flywheelMode = 4; // 4 is max. 1 is min.
 
-	//Toogle Button Bools
-	bool aPressed = false;
-	bool l1Pressed = false;
-	bool l2Pressed = false;
-	bool r1Pressed = false;
-	bool r2Pressed = false;
-	bool rightPressed = false;
-	bool leftPressed = false;
+  // Toogle Button Bools
+  bool aPressed = false;
+  bool l1Pressed = false;
+  bool l2Pressed = false;
+  bool r1Pressed = false;
+  bool r2Pressed = false;
+  bool rightPressed = false;
+  bool leftPressed = false;
 
-	while (true) {
-		//THIS CODE BLOCKS THE MAIN THREAD... DO THIS ASYNC...
-		// if (slewOverride) {
-		// 	pros::delay(5000);
-		// 	slewOverride = false;
-		// }
+  while (true) {
+    // THIS CODE BLOCKS THE MAIN THREAD... DO THIS ASYNC...
+    //  if (slewOverride) {
+    //  	pros::delay(5000);
+    //  	slewOverride = false;
+    //  }
 
-		//Drive Control
-		int left = master.get_analog(ANALOG_LEFT_Y);
-		int right = master.get_analog(ANALOG_RIGHT_Y);
+    // Drive Control
+    int left = master.get_analog(ANALOG_LEFT_Y);
+    int right = master.get_analog(ANALOG_RIGHT_Y);
 
-		if (!slewOverride) { // normal slew control
-			int lOutput = left;
-			if (abs(left - prevLeft) > slewThreshold) {
-				//Change too large. Enable Slew Rate.
-				int change = slew * ((left-prevLeft) >= 0 ? 1: -1);
-				lOutput = prevLeft + change;
-				//Normalize Slew Output.
-				if (lOutput > ANALOG_MAX){
-					lOutput = ANALOG_MAX;
-				} else if (lOutput < ANALOG_MIN) {
-					lOutput = ANALOG_MIN;
-				}
-			}
-			leftWheel1.move(lOutput);
-			leftWheel2.move(lOutput);
-			leftWheel3.move(lOutput);
+    if (!slewOverride) { // normal slew control
+      int lOutput = left;
+      if (abs(left - prevLeft) > slewThreshold) {
+        // Change too large. Enable Slew Rate.
+        int change = slew * ((left - prevLeft) >= 0 ? 1 : -1);
+        lOutput = prevLeft + change;
+        // Normalize Slew Output.
+        if (lOutput > ANALOG_MAX) {
+          lOutput = ANALOG_MAX;
+        } else if (lOutput < ANALOG_MIN) {
+          lOutput = ANALOG_MIN;
+        }
+      }
+      leftWheel1.move(lOutput);
+      leftWheel2.move(lOutput);
+      leftWheel3.move(lOutput);
 
-			int rOutput = right;
-			if (abs(right - prevRight) > slewThreshold) {
-				//Change too large. Enable Slew Rate.
-				int change = slew * ((right-prevRight) >= 0 ? 1: -1);
-				rOutput = prevRight + change;
-				//Normalize Slew Output.
-				if (rOutput > ANALOG_MAX){
-					rOutput = ANALOG_MAX;
-				} else if (rOutput < ANALOG_MIN) {
-					rOutput = ANALOG_MIN;
-				}
-			}
-			rightWheel1.move(rOutput);
-			rightWheel2.move(rOutput);
-			rightWheel3.move(rOutput);
+      int rOutput = right;
+      if (abs(right - prevRight) > slewThreshold) {
+        // Change too large. Enable Slew Rate.
+        int change = slew * ((right - prevRight) >= 0 ? 1 : -1);
+        rOutput = prevRight + change;
+        // Normalize Slew Output.
+        if (rOutput > ANALOG_MAX) {
+          rOutput = ANALOG_MAX;
+        } else if (rOutput < ANALOG_MIN) {
+          rOutput = ANALOG_MIN;
+        }
+      }
+      rightWheel1.move(rOutput);
+      rightWheel2.move(rOutput);
+      rightWheel3.move(rOutput);
 
-			prevLeft = lOutput;
-			prevRight = rOutput;
+      prevLeft = lOutput;
+      prevRight = rOutput;
+    }
 
-		}
+    // Intake and Roller Control (Roller takes precedence over Intake)
+    if (!aPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_A)) {
+      // Toggle slow roller state.
+      rollerOn = !rollerOn;
+    }
+    aPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
 
-		//Intake and Roller Control (Roller takes precedence over Intake)
-		if(!aPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_A)){
-			//Toggle slow roller state.
-			rollerOn = !rollerOn;
-		}
-		aPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_A);
+    if (!l1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)) {
+      // Toggle intake state.
+      intakeOn = !intakeOn;
+    }
+    l1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
 
-		if(!l1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_L1)){
-			//Toggle intake state.
-			intakeOn = !intakeOn;
-		}
-		l1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L1);
+    if (!l2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)) {
+      // Toggle intake state.
+      intakeReversed = !intakeReversed;
+    }
+    l2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
-		if(!l2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_L2)){
-			//Toggle intake state.
-			intakeReversed = !intakeReversed;
-		}
-		l2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
+    if (rollerOn) {
+      intake.move_velocity(-300);
+    } else if (intakeOn) {
+      if (intakeReversed) {
+        intake.move_velocity(-600); // Change speed if this is too fast.
+      } else {
+        intake.move_velocity(600);
+      }
+    } else {
+      intake.move_velocity(0);
+    }
+    // Add Roller Macro.
 
-		if (rollerOn) {
-			intake.move_velocity(-300);
-		} else if (intakeOn) {
-			if(intakeReversed){
-				intake.move_velocity(-600); //Change speed if this is too fast.
-			} else {
-				intake.move_velocity(600);
-			}
-		} else {
-			intake.move_velocity(0);
-		}
-		//Add Roller Macro.
+    // Intake Stall mechanism
+    // if(intake.get_target_velocity() != 0 && intake.get_actual_velocity() ==
+    // 0){ // If the motor's desired rotation speed is non-zero but it is stuck
+    // 	double prev_vel = intake.get_target_velocity();
+    // 	intake.move_velocity(-prev_vel); // reverse motor direction
+    // 	pros::delay(2000); // allow some time to dislodge disk
+    // 	intake.move_velocity(prev_vel); // return to previous direction
+    // }
 
+    // Flywheel Control
+    if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
+      // Toggle flywheel state.
+      flywheelOn = !flywheelOn;
+      flywheelMode = 4;
+    }
+    r1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
 
-		// Intake Stall mechanism
-		// if(intake.get_target_velocity() != 0 && intake.get_actual_velocity() == 0){ // If the motor's desired rotation speed is non-zero but it is stuck
-		// 	double prev_vel = intake.get_target_velocity();
-		// 	intake.move_velocity(-prev_vel); // reverse motor direction
-		// 	pros::delay(2000); // allow some time to dislodge disk
-		// 	intake.move_velocity(prev_vel); // return to previous direction
-		// }
+    // Flywheel Mode
+    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
+      flywheelMode = 3;
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
+      flywheelMode = 2;
+    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
+      flywheelMode = 1;
+    }
 
-		//Flywheel Control
-		if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)){
-			//Toggle flywheel state.
-			flywheelOn = !flywheelOn;
-			flywheelMode = 4;
-		}
-		r1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
+    if (flywheelOn) {
+      // TODO: Do speed based on distance function if possible.
+      int targetSpeed = (ANALOG_MAX - (ANALOG_MAX / 3.5)) +
+                        ((ANALOG_MAX / 3.5) * (flywheelMode / 4.0));
+      if (flywheelSpeed < targetSpeed) { // Accelerate Flywheel to Target.
+        flywheelSpeed = ((flywheelSpeed + flywheelSlew) > targetSpeed
+                             ? targetSpeed
+                             : (flywheelSpeed + flywheelSlew));
+      } else {
+        flywheelSpeed = ((flywheelSpeed - flywheelSlew) < targetSpeed
+                             ? targetSpeed
+                             : (flywheelSpeed - flywheelSlew));
+      }
+    } else {
+      flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO
+                           ? ANALOG_ZERO
+                           : (flywheelSpeed - flywheelSlew));
+    }
+    pros::lcd::set_text(3, std::to_string(flywheelOn));
+    pros::lcd::set_text(4, std::to_string(flywheelSpeed));
+    flywheel.move(flywheelSpeed);
 
-		//Flywheel Mode
-		if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X)){
-			flywheelMode = 3;
-		} else if(master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)){
-			flywheelMode = 2;
-		} else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)){
-			flywheelMode = 1;
-		}
+    // Indexer Control
+    // if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
+    // 	indexer.set_value(true);
+    // 	pros::delay(100);
+    // 	indexer.set_value(false);
+    // }
+    // r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
 
-		if (flywheelOn){
-			//TODO: Do speed based on distance function if possible.
-			int targetSpeed = (ANALOG_MAX-(ANALOG_MAX/3.5)) + ((ANALOG_MAX/3.5) * (flywheelMode/4.0));
-			if (flywheelSpeed < targetSpeed) { //Accelerate Flywheel to Target.
-				flywheelSpeed = ((flywheelSpeed + flywheelSlew) > targetSpeed ? targetSpeed : (flywheelSpeed + flywheelSlew));
-			} else {
-				flywheelSpeed = ((flywheelSpeed - flywheelSlew) < targetSpeed ? targetSpeed : (flywheelSpeed - flywheelSlew));
-			}
-		} else {
-			flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));
-		}
+    // Extension Control
+    if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
+      // extension1.set_value(false);
+      // extension2.set_value(false);
+      extension1.set_value(true);
+      extension2.set_value(true);
+    }
 
-		flywheel.move(flywheelSpeed);
+    rightPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
+    leftPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
 
-		// Indexer Control
-		// if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-		// 	indexer.set_value(true);
-		// 	pros::delay(100);
-		// 	indexer.set_value(false);
-		// }
-		// r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
-
-		// Extension Control
-		if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
-			// extension1.set_value(false);
-			// extension2.set_value(false);
-			extension1.set_value(true);
-			extension2.set_value(true);
-		}
-
-		rightPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);
-		leftPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_LEFT);
-
-		pros::delay(20);
-	}
+    pros::delay(20);
+  }
 }
