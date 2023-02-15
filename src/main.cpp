@@ -80,9 +80,9 @@ void competition_initialize() {}
  */
 void autonomous() {
   pros::lcd::set_text(3, "Auton");
-  turnAngle(90);
+  // turnAngle(90);
   // moveDistance(2);
-  // roller();
+  roller();
   // while(true){
   // 	pros::lcd::set_text(4, std::to_string(leftQuad.get_value()));
   // 	pros::lcd::set_text(5, std::to_string(rightQuad.get_value()));
@@ -122,18 +122,9 @@ void opcontrol() {
   bool rollerOn = false;
   bool intakeOn = false;
   bool intakeReversed = false;
-  bool flywheelOn = false;
 
   // Intake Stall Mechanism
-  bool intakeStall =
-      false; // Implement to enable automatic intake disloge possibily.
-
-  // Flywheel Slew rate
-  int flywheelSpeed = 0;
-  int flywheelSlew = 20;
-
-  // Flywheel Speed Mode
-  int flywheelMode = 4; // 4 is max. 1 is min.
+  bool intakeStall = false; // Implement to enable automatic intake disloge possibily.
 
   // Toogle Button Bools
   bool aPressed = false;
@@ -235,50 +226,11 @@ void opcontrol() {
 
     // Flywheel Control
     if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-      // Toggle flywheel state.
-      flywheelOn = !flywheelOn;
-      flywheelMode = 4;
+      while(!cataLimit.get_value()) {
+        cata.move(ANALOG_MAX);
+      }
     }
     r1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);
-
-    // Flywheel Mode
-    if (master.get_digital(pros::E_CONTROLLER_DIGITAL_X)) {
-      flywheelMode = 3;
-    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_Y)) {
-      flywheelMode = 2;
-    } else if (master.get_digital(pros::E_CONTROLLER_DIGITAL_B)) {
-      flywheelMode = 1;
-    }
-
-    if (flywheelOn) {
-      // TODO: Do speed based on distance function if possible.
-      int targetSpeed = (ANALOG_MAX - (ANALOG_MAX / 3.5)) +
-                        ((ANALOG_MAX / 3.5) * (flywheelMode / 4.0));
-      if (flywheelSpeed < targetSpeed) { // Accelerate Flywheel to Target.
-        flywheelSpeed = ((flywheelSpeed + flywheelSlew) > targetSpeed
-                             ? targetSpeed
-                             : (flywheelSpeed + flywheelSlew));
-      } else {
-        flywheelSpeed = ((flywheelSpeed - flywheelSlew) < targetSpeed
-                             ? targetSpeed
-                             : (flywheelSpeed - flywheelSlew));
-      }
-    } else {
-      flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO
-                           ? ANALOG_ZERO
-                           : (flywheelSpeed - flywheelSlew));
-    }
-    pros::lcd::set_text(3, std::to_string(flywheelOn));
-    pros::lcd::set_text(4, std::to_string(flywheelSpeed));
-    flywheel.move(flywheelSpeed);
-
-    // Indexer Control
-    // if (!r2Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R2)) {
-    // 	indexer.set_value(true);
-    // 	pros::delay(100);
-    // 	indexer.set_value(false);
-    // }
-    // r2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R2);
 
     // Extension Control
     if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
