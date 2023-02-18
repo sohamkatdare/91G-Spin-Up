@@ -6,14 +6,14 @@
 #include "pros/optical.hpp"
 
 // Defintions for Ports
-#define LEFT_WHEEL_1 16
-#define LEFT_WHEEL_2 20
-#define LEFT_WHEEL_3 15
-#define RIGHT_WHEEL_1 12
-#define RIGHT_WHEEL_2 14
-#define RIGHT_WHEEL_3 19
-#define CATA 1
-#define INTAKE 7
+#define LEFT_WHEEL_1 1 
+#define LEFT_WHEEL_2 3
+#define LEFT_WHEEL_3 11
+#define RIGHT_WHEEL_1 4
+#define RIGHT_WHEEL_2 5
+#define RIGHT_WHEEL_3 7
+#define CATA 8
+#define INTAKE 10
 #define IMU 20
 
 #define LEFT_QUAD_TOP 'A'

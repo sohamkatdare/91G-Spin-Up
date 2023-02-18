@@ -82,7 +82,8 @@ bin/main.cpp.o: src/main.cpp src/../include/main.h src/../include/api.h \
  src/../include/pros/vision.hpp include/pros/vision.h \
  src/../include/pros/link.hpp include/pros/link.h \
  src/../include/pros/misc.h src/auton.hpp src/initialize.hpp \
- include/pros/optical.hpp src/odom.hpp src/pid.hpp src/util.hpp
+ include/pros/adi.hpp include/pros/optical.hpp src/odom.hpp src/pid.hpp \
+ src/util.hpp
 src/../include/main.h:
 src/../include/api.h:
 src/../include/pros/adi.h:
@@ -237,6 +238,7 @@ include/pros/link.h:
 src/../include/pros/misc.h:
 src/auton.hpp:
 src/initialize.hpp:
+include/pros/adi.hpp:
 include/pros/optical.hpp:
 src/odom.hpp:
 src/pid.hpp:

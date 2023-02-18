@@ -81,7 +81,7 @@ bin/odom.cpp.o: src/odom.cpp src/../include/main.h src/../include/api.h \
  src/../include/pros/screen.hpp include/pros/screen.h \
  src/../include/pros/vision.hpp include/pros/vision.h \
  src/../include/pros/link.hpp include/pros/link.h src/initialize.hpp \
- include/pros/optical.hpp src/pid.hpp src/util.hpp
+ include/pros/adi.hpp include/pros/optical.hpp src/pid.hpp src/util.hpp
 src/../include/main.h:
 src/../include/api.h:
 src/../include/pros/adi.h:
@@ -234,6 +234,7 @@ include/pros/vision.h:
 src/../include/pros/link.hpp:
 include/pros/link.h:
 src/initialize.hpp:
+include/pros/adi.hpp:
 include/pros/optical.hpp:
 src/pid.hpp:
 src/util.hpp:

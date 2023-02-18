@@ -80,7 +80,7 @@ bin/initialize.cpp.o: src/initialize.cpp src/initialize.hpp \
  src/../include/pros/rtos.hpp include/pros/rtos.h \
  src/../include/pros/screen.hpp include/pros/screen.h \
  src/../include/pros/vision.hpp include/pros/vision.h \
- src/../include/pros/link.hpp include/pros/link.h \
+ src/../include/pros/link.hpp include/pros/link.h include/pros/adi.hpp \
  include/pros/optical.hpp
 src/initialize.hpp:
 src/../include/main.h:
@@ -234,4 +234,5 @@ src/../include/pros/vision.hpp:
 include/pros/vision.h:
 src/../include/pros/link.hpp:
 include/pros/link.h:
+include/pros/adi.hpp:
 include/pros/optical.hpp:

@@ -226,7 +226,11 @@ void opcontrol() {
 
     // Flywheel Control
     if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-      while(!cataLimit.get_value()) {
+      if(!cataLimit.get_value()) {
+        while(!cataLimit.get_value()) {
+          cata.move(ANALOG_MAX);
+        }
+      } else {
         cata.move(ANALOG_MAX);
       }
     }
