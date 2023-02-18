@@ -122,6 +122,8 @@ void opcontrol() {
   bool rollerOn = false;
   bool intakeOn = false;
   bool intakeReversed = false;
+  bool fire = false;
+  bool cataFire = false;
 
   // Intake Stall Mechanism
   bool intakeStall = false; // Implement to enable automatic intake disloge possibily.
@@ -224,14 +226,24 @@ void opcontrol() {
     // 	intake.move_velocity(prev_vel); // return to previous direction
     // }
 
-    // Flywheel Control
-    if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) {
-      if(!cataLimit.get_value()) {
-        while(!cataLimit.get_value()) {
-          cata.move(ANALOG_MAX);
+    // Cata Control
+    if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) { //Cata is assumed to be in the down position (loaded position).
+      if (!cataFire){ //If cata is not firing, then fire it.
+        cataFire = true; //Set cataFire flag.
+      }
+    }
+    if (cataFire) { //When cataFire flag is set, cata is fired.
+      cata.move(ANALOG_MAX); //Move continuously until next limit switch press.
+      if (!fire) { //Cata is not slipping yet.
+        if (!cataLimit.get_value()) { // Cata just slipped. Stop firing state.
+          fire = true;
         }
-      } else {
-        cata.move(ANALOG_MAX);
+      } else { //Cata Slip Gear slipping. 
+        if (cataLimit.get_value()) { // Cata is still not fully loaded. Drawing back...
+          cata.move(0); //Stop reloading. Fire on next R1 press.
+          fire = false; //Reset fire flag.
+          cataFire = false; //Reset cataFire flag.
+        }
       }
     }
     r1Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_R1);

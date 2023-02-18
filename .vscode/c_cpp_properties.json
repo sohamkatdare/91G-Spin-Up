@@ -13,14 +13,14 @@
         "UNICODE",
         "_UNICODE"
       ],
-      "compilerPath": "c:\\Users\\amitk\\AppData\\Roaming\\Code\\User\\globalStorage\\sigbots.pros\\install\\pros-toolchain-windows\\usr\\bin\\arm-none-eabi-g++",
+      "compilerPath": "C:\\Users\\halde_000.SUBHASHIS-PC\\AppData\\Local\\Programs\\PROS\\toolchain\\usr\\bin\\arm-none-eabi-g++",
       "cStandard": "c17",
       "cppStandard": "c++17",
       "intelliSenseMode": "gcc-arm",
-      "compileCommands": "c:\\Users\\amitk\\Desktop\\91G-Spin-Up\\compile_commands.json",
+      "compileCommands": "c:\\Users\\halde_000.SUBHASHIS-PC\\Documents\\GitHub\\91G-Spin-Up\\compile_commands.json",
       "browse": {
         "path": [
-          "c:\\Users\\amitk\\Desktop\\91G-Spin-Up"
+          "c:\\Users\\halde_000.SUBHASHIS-PC\\Documents\\GitHub\\91G-Spin-Up"
         ],
         "limitSymbolsToIncludedHeaders": true,
         "databaseFilename": ""
