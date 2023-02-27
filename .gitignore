@@ -37,4 +37,5 @@
 
 # Cache
 .cache
-bin/*
+bin/**
+bin
