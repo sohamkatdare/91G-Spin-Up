@@ -124,9 +124,11 @@ void opcontrol() {
   bool intakeReversed = false;
   bool fire = false;
   bool cataFire = false;
+  int redrawCooldown = 0;
 
   // Intake Stall Mechanism
-  bool intakeStall = false; // Implement to enable automatic intake disloge possibily.
+  bool intakeStall =
+      false; // Implement to enable automatic intake disloge possibily.
 
   // Toogle Button Bools
   bool aPressed = false;
@@ -205,7 +207,7 @@ void opcontrol() {
     l2Pressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_L2);
 
     if (rollerOn) {
-      intake.move_velocity(-300);
+      intake.move_velocity(-400);
     } else if (intakeOn) {
       if (intakeReversed) {
         intake.move_velocity(-600); // Change speed if this is too fast.
@@ -227,22 +229,34 @@ void opcontrol() {
     // }
 
     // Cata Control
-    if (!r1Pressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_R1)) { //Cata is assumed to be in the down position (loaded position).
-      if (!cataFire){ //If cata is not firing, then fire it.
-        cataFire = true; //Set cataFire flag.
+    if (!r1Pressed &&
+        master.get_digital(
+            pros::E_CONTROLLER_DIGITAL_R1)) { // Cata is assumed to be in the
+                                              // down position (loaded
+                                              // position).
+      if (!cataFire) {   // If cata is not firing, then fire it.
+        cataFire = true; // Set cataFire flag.
       }
     }
-    if (cataFire) { //When cataFire flag is set, cata is fired.
-      cata.move(ANALOG_MAX); //Move continuously until next limit switch press.
-      if (!fire) { //Cata is not slipping yet.
+    if (cataFire) {          // When cataFire flag is set, cata is fired.
+      cata.move(100); // Move continuously until next limit switch press.
+      if (!fire) {           // Cata is not slipping yet.
         if (!cataLimit.get_value()) { // Cata just slipped. Stop firing state.
           fire = true;
+          pros::lcd::set_text(3, "Fire");
         }
-      } else { //Cata Slip Gear slipping. 
-        if (cataLimit.get_value()) { // Cata is still not fully loaded. Drawing back...
-          cata.move(0); //Stop reloading. Fire on next R1 press.
-          fire = false; //Reset fire flag.
-          cataFire = false; //Reset cataFire flag.
+      } else {                       // Cata Slip Gear slipping.
+        if (cataLimit.get_value()) { // Cata is still not fully loaded. Drawing
+                                     // back...
+          redrawCooldown += 1;
+          if (redrawCooldown >= 3) {
+            pros::lcd::set_text(4, "Redraw");
+            pros::lcd::set_text(4, "Redraw");
+            cata.move(0);     // Stop reloading. Fire on next R1 press.
+            fire = false;     // Reset fire flag.
+            cataFire = false; // Reset cataFire flag.
+            redrawCooldown = 0;
+          }
         }
       }
     }
@@ -252,8 +266,8 @@ void opcontrol() {
     if (!rightPressed && master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT)) {
       // extension1.set_value(false);
       // extension2.set_value(false);
-      extension1.set_value(true);
-      extension2.set_value(true);
+      extension.set_value(true);
+      // extension2.set_value(true);
     }
 
     rightPressed = master.get_digital(pros::E_CONTROLLER_DIGITAL_RIGHT);

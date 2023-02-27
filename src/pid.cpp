@@ -251,56 +251,56 @@ void turnAngle(double angleInDegrees) { //Sychronous function. Will block main t
 
 // flywheel PID
 
-void shoot (double targetVelocity) {
-	// constants
-	double kp = 0.0;
-	double ki = 0.0;
-	double kd = 0.0;
+// void shoot (double targetVelocity) {
+// 	// constants
+// 	double kp = 0.0;
+// 	double ki = 0.0;
+// 	double kd = 0.0;
 
-	double signedError = targetVelocity;
-	double lastSignedError = signedError;
-	double error = std::abs(signedError);
-	double lastError = error;
-	double integral = 0;
+// 	double signedError = targetVelocity;
+// 	double lastSignedError = signedError;
+// 	double error = std::abs(signedError);
+// 	double lastError = error;
+// 	double integral = 0;
 
-	int motionProfile = 0;
+// 	int motionProfile = 0;
 
-	float currentTime = 0;
-	std::vector<float> timeData;
-	std::vector<float> errorData;
-	std::vector<float> targetData;
-	std::vector<float> motorData;
-	std::vector<float> PIDData;
-	std::vector<float> motionProfileData;
-	while (error >= 0.5) {
+// 	float currentTime = 0;
+// 	std::vector<float> timeData;
+// 	std::vector<float> errorData;
+// 	std::vector<float> targetData;
+// 	std::vector<float> motorData;
+// 	std::vector<float> PIDData;
+// 	std::vector<float> motionProfileData;
+// 	while (error >= 0.5) {
 		
-		signedError = targetVelocity - flywheel.get_actual_velocity();
-		error = std::abs(signedError);
-		timeData.push_back(currentTime);
-		errorData.push_back(signedError);
-		targetData.push_back(0.0);
-		currentTime += 20;
+// 		signedError = targetVelocity - flywheel.get_actual_velocity();
+// 		error = std::abs(signedError);
+// 		timeData.push_back(currentTime);
+// 		errorData.push_back(signedError);
+// 		targetData.push_back(0.0);
+// 		currentTime += 20;
 
-		// main PID calculations
-		double p = error * kp;
-		integral += error;
-		double i = integral * ki;
-		double d = (error - lastError) * kd;
-		lastError = error;
-		lastSignedError = signedError;
-		double pid = p + i + d;
-		PIDData.push_back(pid);
-		motionProfileData.push_back(motionProfile);
-		double power = motionProfile;
-		if (motionProfile >= pid) {
-			power = pid;
-		}
-		motorData.push_back(power);
-		flywheel.move(power);
+// 		// main PID calculations
+// 		double p = error * kp;
+// 		integral += error;
+// 		double i = integral * ki;
+// 		double d = (error - lastError) * kd;
+// 		lastError = error;
+// 		lastSignedError = signedError;
+// 		double pid = p + i + d;
+// 		PIDData.push_back(pid);
+// 		motionProfileData.push_back(motionProfile);
+// 		double power = motionProfile;
+// 		if (motionProfile >= pid) {
+// 			power = pid;
+// 		}
+// 		motorData.push_back(power);
+// 		flywheel.move(power);
 
-		motionProfile += (motionProfile + 25 <= 127 ? 25 : 0);
-		pros::delay(20);
-	}
+// 		motionProfile += (motionProfile + 25 <= 127 ? 25 : 0);
+// 		pros::delay(20);
+// 	}
 
 	
-}
+// }

@@ -16,33 +16,33 @@ void drive_move(double left_voltage, double right_voltage) {
 	leftWheel3.move(left_voltage);
 }
 
-void flywheel_move() {
-    int flywheelSpeed = 0;
-    int flywheelSlew = 20;
-    if (flywheel.get_actual_velocity() == 0) {
-        while (flywheelSpeed < ANALOG_MAX) {
-            flywheelSpeed = ((flywheelSpeed + flywheelSlew) > ANALOG_MAX ? ANALOG_MAX : (flywheelSpeed + flywheelSlew));
-        }
-    } else {
-        flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));
-    }
-}
+// void flywheel_move() {
+//     int flywheelSpeed = 0;
+//     int flywheelSlew = 20;
+//     if (flywheel.get_actual_velocity() == 0) {
+//         while (flywheelSpeed < ANALOG_MAX) {
+//             flywheelSpeed = ((flywheelSpeed + flywheelSlew) > ANALOG_MAX ? ANALOG_MAX : (flywheelSpeed + flywheelSlew));
+//         }
+//     } else {
+//         flywheelSpeed = ((flywheelSpeed - flywheelSlew) < ANALOG_ZERO ? ANALOG_ZERO : (flywheelSpeed - flywheelSlew));
+//     }
+// }
 
 void roller() {
     intake.move(-127);
-	drive_move(-40, -40);
+	drive_move(40, 40);
     pros::delay(500);
 	intake.move(0);
 	drive_move(0, 0);
 	pros::delay(2000);
-	drive_move(40, 40);
+	drive_move(-40, -40);
 	pros::delay(200);
 	drive_move(0, 0);
 }
 
 void basket() {
 	roller();
-	flywheel_move();
+	// flywheel_move();
 	intake.move(-127);
 	pros::delay(500);
 	intake.move(0);
