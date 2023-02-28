@@ -39,3 +39,5 @@
 .cache
 bin/**
 bin
+.d\**
+.d
