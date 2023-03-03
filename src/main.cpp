@@ -249,7 +249,7 @@ void opcontrol() {
         if (cataLimit.get_value()) { // Cata is still not fully loaded. Drawing
                                      // back...
           redrawCooldown += 1;
-          if (redrawCooldown >= 3) {
+          if (redrawCooldown >= 2) {
             pros::lcd::set_text(4, "Redraw");
             pros::lcd::set_text(4, "Redraw");
             cata.move(0);     // Stop reloading. Fire on next R1 press.
